@@ -1,27 +1,31 @@
 CC = gcc 
 CFLAGS = -Wall -I$(INCDIR)
 
-MAINTARGET = $(LIBDIR)libdatastructs.a
+MAINTARGET = datastructs
+SAMPLE = $(BINDIR)sample
 
 SRCDIR = src/
 INCDIR = include/ 
 OBJDIR = obj/
 BINDIR = bin/
 LIBDIR = lib/
-SAMPLEDIR = samples/
+SAMPLEDIR = sample/
 
 SRCS = $(wildcard $(SRCDIR)*.c)
 OBJS = $(patsubst $(SRCDIR)%.c, $(OBJDIR)%.o, $(SRCS))
-SRCSAMPLES = $(wildcard $(SAMPLEDIR)*.c)
 
-all: $(OBJS)
-	@ar rcs $(MAINTARGET) $^
+lib: $(OBJS)
+	@ar rcs $(LIBDIR)lib$(MAINTARGET).a $^
 
 $(OBJDIR)%.o: $(SRCDIR)%.c 
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-$(BINDIR)%: $(SAMPLEDIR)%.c
-	@$(CC) $(CFLAGS) $< -o $@
+
+run: $(SAMPLE)
+	@./$(SAMPLE)
+
+$(SAMPLE): $(SAMPLEDIR)sample.c $(LIBDIR)lib$(MAINTARGET).a
+	@$(CC) $(CFLAGS) -L$(LIBDIR) $< -o $@ -l$(MAINTARGET)
 
 clean: 
 	@rm -f $(OBJDIR)*
