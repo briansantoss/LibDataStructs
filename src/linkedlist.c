@@ -41,6 +41,7 @@ static ListNode* list_create_node(TypedValue value_data) {
                 return NULL;
             }
 
+            strcpy(value_copy, value_data.value.string_value);
             new_node->data.value.string_value = value_copy;
     }
 
@@ -94,9 +95,8 @@ static void list_push_end(LinkedList* list, TypedValue value_data) {
 
     
     if (list_is_empty(list)) {
-        list->head = new_node;
-    }
-    
+        list->head = list->tail = new_node;
+    } else {
     list->tail->next = new_node;
     list->tail = new_node;
 
