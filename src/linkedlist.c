@@ -3,8 +3,12 @@
 #include <string.h>
 #include "linkedlist.h"
 
+static bool list_not_exists(LinkedList* list) {
+    return list == NULL;
+}
+
 static bool list_is_empty(LinkedList* list) {
-    return (list == NULL) || (list->head == NULL);
+    return list->head == NULL;
 }
 
 static ListNode* list_create_node(TypedValue value_data) {
@@ -63,7 +67,7 @@ static void list_free_node(ListNode* node) {
 }
 
 static void list_push(LinkedList* list, TypedValue value_data) {
-    if (list == NULL) {
+    if (list_not_exists(list)) {
         return;
     }
 
@@ -72,7 +76,6 @@ static void list_push(LinkedList* list, TypedValue value_data) {
         return;
     }
 
-    
     if (list_is_empty(list)) {
         list->tail = new_node;
     }
@@ -84,7 +87,7 @@ static void list_push(LinkedList* list, TypedValue value_data) {
 }
 
 static void list_push_end(LinkedList* list, TypedValue value_data) {
-    if (list == NULL) {
+    if (list_not_exists(list)) {
         return;
     }
 
@@ -104,7 +107,7 @@ static void list_push_end(LinkedList* list, TypedValue value_data) {
 }
 
 static void list_insert_at(LinkedList* list, size_t index, TypedValue value_data) {
-    if (list == NULL || index >= list->size) {
+    if (list_not_exists(list) || index > list->size) {
         return;
     }
 
@@ -146,7 +149,7 @@ LinkedList* list_init(void) {
 }
 
 void list_free(LinkedList* list) {
-    if (list == NULL) {
+    if (list_not_exists(list)) {
         return;
     }
 
@@ -159,13 +162,13 @@ void list_free(LinkedList* list) {
         curr = next;
     }
 
-    list->head  = list->tail = NULL;
+    list->head = list->tail = NULL;
 
     free(list);
 }
 
 size_t list_len(LinkedList* list) {
-    if (list_is_empty(list)) {
+    if (list_not_exists(list)) {
         return 0;
     }
     return list->size;
