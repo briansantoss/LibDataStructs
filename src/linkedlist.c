@@ -92,17 +92,47 @@ static void list_push_end(LinkedList* list, TypedValue value_data) {
     if (new_node == NULL) {
         return;
     }
-
     
     if (list_is_empty(list)) {
         list->head = list->tail = new_node;
     } else {
-    list->tail->next = new_node;
-    list->tail = new_node;
+        list->tail->next = new_node;
+        list->tail = new_node;
+    }
 
     list->size++;
 }
 
+static void list_insert_at(LinkedList* list, size_t index, TypedValue value_data) {
+    if (list == NULL || index >= list->size) {
+        return;
+    }
+
+    if (index == 0) {
+        list_push(list, value_data);
+        return;
+    }
+
+    if (index == list->size) {
+        list_push_end(list, value_data);
+        return;
+    }
+    
+    ListNode* new_node = list_create_node(value_data);
+    if (new_node == NULL) {
+        return;
+    }
+
+    ListNode* curr = list->head;
+    for (size_t i = 0; i < index - 1; i++) {
+        curr = curr->next;
+    }
+
+    new_node->next = curr->next;
+    curr->next = new_node;
+
+    list->size++;
+}
 
 LinkedList* list_init(void) {
     LinkedList* new_list = (LinkedList*) malloc(sizeof (LinkedList));
@@ -205,6 +235,36 @@ void list_push_end_double(LinkedList* list, double value) {
 void list_push_end_string(LinkedList* list, char* value) {
     TypedValue value_data = {.value = {.string_value = value}, .value_type = STRING_TYPE};
     list_push_end(list, value_data);
+}
+
+void list_insert_bool_at(LinkedList* list, size_t index, bool value) {
+    TypedValue value_data = {.value = {.bool_value = value}, .value_type = BOOL_TYPE};
+    list_insert_at(list, index, value_data);
+}
+
+void list_insert_char_at(LinkedList* list, size_t index, char value) {
+    TypedValue value_data = {.value = {.char_value = value}, .value_type = CHAR_TYPE};
+    list_insert_at(list, index, value_data);
+}
+
+void list_insert_int_at(LinkedList* list, size_t index, int value) {
+    TypedValue value_data = {.value = {.int_value = value}, .value_type = INT_TYPE};
+    list_insert_at(list, index, value_data);
+}
+
+void list_insert_float_at(LinkedList* list, size_t index, float value) {
+    TypedValue value_data = {.value = {.float_value = value}, .value_type = FLOAT_TYPE};
+    list_insert_at(list, index, value_data);
+}
+
+void list_insert_double_at(LinkedList* list, size_t index, double value) {
+    TypedValue value_data = {.value = {.double_value = value}, .value_type = DOUBLE_TYPE};
+    list_insert_at(list, index, value_data);
+}
+
+void list_insert_string_at(LinkedList* list, size_t index, char* value) {
+    TypedValue value_data = {.value = {.string_value = value}, .value_type = STRING_TYPE};
+    list_insert_at(list, index, value_data);
 }
 
 void list_display(LinkedList* list) {

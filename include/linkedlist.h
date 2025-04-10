@@ -35,12 +35,12 @@ void list_push_end_float(LinkedList* list, float value);
 void list_push_end_double(LinkedList* list, double value);
 void list_push_end_string(LinkedList* list, char* value);
 
-void list_insert_bool_at(LinkedList* list, bool value, size_t index);
-void list_insert_char_at(LinkedList* list, char value, size_t index);
-void list_insert_int_at(LinkedList* list, int value, size_t index);
-void list_insert_float_at(LinkedList* list, float value, size_t index);
-void list_insert_double_at(LinkedList* list, double value, size_t index);
-void list_insert_string_at(LinkedList* list, char* value, size_t index);
+void list_insert_bool_at(LinkedList* list, size_t index, bool value);
+void list_insert_char_at(LinkedList* list, size_t index, char value);
+void list_insert_int_at(LinkedList* list, size_t index, int value);
+void list_insert_float_at(LinkedList* list, size_t index, float value);
+void list_insert_double_at(LinkedList* list, size_t index, double value);
+void list_insert_string_at(LinkedList* list, size_t index, char* value);
 
 // TODO
 // void list_reverse(LinkedList* list);
