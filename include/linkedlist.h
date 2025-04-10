@@ -42,6 +42,8 @@ void list_insert_float_at(LinkedList* list, size_t index, float value);
 void list_insert_double_at(LinkedList* list, size_t index, double value);
 void list_insert_string_at(LinkedList* list, size_t index, char* value);
 
+void list_remove_at(LinkedList* list, size_t index);
+
 // TODO
 // void list_reverse(LinkedList* list);
 

@@ -75,7 +75,7 @@ static void list_push(LinkedList* list, TypedValue value_data) {
     if (new_node == NULL) {
         return;
     }
-
+    
     if (list_is_empty(list)) {
         list->tail = new_node;
     }
@@ -268,6 +268,40 @@ void list_insert_double_at(LinkedList* list, size_t index, double value) {
 void list_insert_string_at(LinkedList* list, size_t index, char* value) {
     TypedValue value_data = {.value = {.string_value = value}, .value_type = STRING_TYPE};
     list_insert_at(list, index, value_data);
+}
+
+void list_remove_at(LinkedList* list, size_t index) {
+    if (list_not_exists(list) || list_is_empty(list) || index >= list->size) {
+        return;
+    }
+
+    if (index == 0) {
+        ListNode* head = list->head;
+
+        if (list_len(list) == 1) {
+            list->head = list->tail = NULL;
+        } else {
+            list->head = head->next;
+        }
+        
+        list_free_node(head);
+    } else {
+        ListNode* curr = list->head;
+        for (size_t i = 0; i < index - 1; i++) {
+            curr = curr->next;
+        }
+
+        ListNode* target_node = curr->next;
+        curr->next = target_node->next;
+
+        if (target_node == list->tail) {
+            list->tail = curr;
+        }
+
+        list_free_node(target_node);
+    }
+
+    list->size--;
 }
 
 void list_display(LinkedList* list) {
