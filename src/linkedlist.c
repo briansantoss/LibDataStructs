@@ -148,6 +148,24 @@ LinkedList* list_init(void) {
     return new_list;
 }
 
+void list_clear(LinkedList* list) {
+    if (list_not_exists(list)) {
+        return;
+    }
+
+    ListNode* curr = list->head;
+    while (curr != NULL) {
+        ListNode* next = curr->next;
+
+        list_free_node(curr);
+
+        curr = next;
+    }
+
+    list->head = list->tail = NULL;
+    list->size = 0;
+}
+
 void list_free(LinkedList* list) {
     if (list_not_exists(list)) {
         return;

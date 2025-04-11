@@ -18,6 +18,7 @@ typedef struct {
 } LinkedList;
 
 LinkedList* list_init(void);
+void list_clear(LinkedList* list);
 void list_free(LinkedList* list);
 size_t list_len(LinkedList* list);
 
