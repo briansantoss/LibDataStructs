@@ -304,6 +304,25 @@ void list_remove_at(LinkedList* list, size_t index) {
     list->size--;
 }
 
+void list_reverse(LinkedList* list) {
+    ListNode* previous = NULL;
+
+    ListNode* old_head = list->head;
+
+    ListNode* curr = list->head;
+    while (curr) {
+        ListNode* next = curr->next;
+        
+        curr->next = previous;
+        previous = curr;
+
+        curr = next;
+    }
+
+    list->head = previous;
+    list->tail = old_head;
+}
+
 void list_display(LinkedList* list) {
     if (list_is_empty(list)) {
         return;

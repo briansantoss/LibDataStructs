@@ -44,8 +44,7 @@ void list_insert_string_at(LinkedList* list, size_t index, char* value);
 
 void list_remove_at(LinkedList* list, size_t index);
 
-// TODO
-// void list_reverse(LinkedList* list);
+void list_reverse(LinkedList* list);
 
 void list_display(LinkedList* list);
 

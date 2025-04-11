@@ -21,8 +21,11 @@ int main() {
 
     printf("Linked list len: %lld\n", list_len(list));
     
-    list_free(list);
+    list_reverse(list);
 
     list_display(list);
+
+    list_free(list);
+
     return 0;
 }
