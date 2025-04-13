@@ -13,6 +13,8 @@ SAMPLEDIR = sample/
 
 SRCS = $(wildcard $(SRCDIR)*.c)
 OBJS = $(patsubst $(SRCDIR)%.c, $(OBJDIR)%.o, $(SRCS))
+SAMPLESSRCS = $(wildcard $(SAMPLEDIR)*.c)
+SAMPLES = $(patsubst $(SAMPLEDIR)%.c, $(BINDIR)%, $(SAMPLESSRCS))
 
 lib: $(OBJS)
 	@ar rcs $(LIBDIR)lib$(MAINTARGET).a $^
@@ -20,12 +22,13 @@ lib: $(OBJS)
 $(OBJDIR)%.o: $(SRCDIR)%.c 
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-
 run: $(SAMPLE)
 	@./$(SAMPLE)
 
-$(SAMPLE): $(SAMPLEDIR)sample.c $(LIBDIR)lib$(MAINTARGET).a
-	@$(CC) $(CFLAGS) -L$(LIBDIR) $< -o $@ -l$(MAINTARGET)
+samples: $(SAMPLES) 
+
+$(BINDIR)%: $(SAMPLEDIR)%.c lib
+	@$(CC) $(CFLAGS) -L$(LIBDIR) -l$(MAINTARGET)
 
 clean: 
 	@rm -f $(OBJDIR)*
