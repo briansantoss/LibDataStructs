@@ -22,13 +22,10 @@ lib: $(OBJS)
 $(OBJDIR)%.o: $(SRCDIR)%.c 
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-run: $(SAMPLE)
-	@./$(SAMPLE)
-
 samples: $(SAMPLES) 
 
 $(BINDIR)%: $(SAMPLEDIR)%.c lib
-	@$(CC) $(CFLAGS) -L$(LIBDIR) -l$(MAINTARGET)
+	@$(CC) $(CFLAGS)  $< -L$(LIBDIR) -l$(MAINTARGET) -o $@
 
 clean: 
 	@rm -f $(OBJDIR)*
