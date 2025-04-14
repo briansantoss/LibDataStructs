@@ -2,7 +2,7 @@
 #include "linkedlist.h"
 
 int main() {
-    LinkedList* list = list_init();
+    LinkedList list = list_init();
     if (list == NULL) {
         perror("Error: cannot create the list.");
     }
