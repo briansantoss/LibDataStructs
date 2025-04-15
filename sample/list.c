@@ -3,6 +3,10 @@
 
 int double_num(int num) {
     return num * 2;
+}    
+
+int square_num(int num) {
+    return num * num;
 }
 
 int main() {
@@ -33,10 +37,22 @@ int main() {
     printf("\nValue at position %d: %d", 0, intlist_get_at(list, 0));
     printf("\nValue at position %d: %d", 1, intlist_get_at(list, 1));
     printf("\nValue at position %d: %d", 2, intlist_get_at(list, 2));
-
+    
     printf("\nThe list %s contain the value 1234", intlist_contains(list, 1234) ? "does" : "does not");
     
-    intlist_free(list);
+    IntList squared = intlist_map(list, square_num);
+    if (squared == NULL) {
+        perror("Error: cannot create the list.");
+        return 1;
+    }
     
+    printf("\n\nA squared version.. ");
+    printf("\nValue at position %d: %d", 0, intlist_get_at(squared, 0));
+    printf("\nValue at position %d: %d", 1, intlist_get_at(squared, 1));
+    printf("\nValue at position %d: %d", 2, intlist_get_at(squared, 2));
+
+    intlist_free(list);
+    intlist_free(squared);
+
     return 0;
 }

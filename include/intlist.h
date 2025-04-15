@@ -17,5 +17,7 @@ size_t intlist_len(IntList list);
 void intlist_reverse(IntList list);
 int intlist_contains(IntList list, int target);
 void intlist_foreach(IntList list, int (*callback_func)(int value));
+IntList intlist_map(IntList list, int (*callback_func)(int value));
+IntList intlist_filter(IntList list, int (*callback_func)(int value));
 
 #endif

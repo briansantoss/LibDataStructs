@@ -117,7 +117,6 @@ void intlist_insert_at(IntList list, int value, size_t index) {
     list->size++;
 }
 
-
 int intlist_get_at(IntList list, size_t index) {
     // TODO: trocar valor de retorno nesse caso
     if (intlist_not_exists(list) || intlist_is_empty(list) || index >= list->size) return -123; // Valor temporário
@@ -162,6 +161,38 @@ void intlist_foreach(IntList list, int (*callback_func)(int value)) {
         curr->value = callback_func(curr->value);
         curr = curr->next;
     }
+}
+
+IntList intlist_map(IntList list, int (*callback_func)(int value)) {
+    if (intlist_not_exists(list) || intlist_is_empty(list) || callback_func == NULL) return NULL;
+
+    IntList new_list = intlist_init();
+    if (new_list == NULL) return NULL;
+
+    IntNode curr = list->head;
+    while (curr != NULL) {
+        intlist_push_end(new_list, callback_func(curr->value));
+
+        curr = curr->next;
+    }
+
+    return new_list;
+}
+
+IntList intlist_filter(IntList list, int (*callback_func)(int value)) {
+    if (intlist_not_exists(list) || intlist_is_empty(list) || callback_func == NULL) return NULL;
+
+    IntList new_list = intlist_init();
+    if (new_list == NULL) return NULL;
+
+    IntNode curr = list->head;
+    while (curr != NULL) {
+        if (callback_func(curr->value)) intlist_push_end(new_list, curr->value);
+
+        curr = curr->next;
+    }
+
+    return new_list;
 }
 
 int intlist_contains(IntList list, int target) {
