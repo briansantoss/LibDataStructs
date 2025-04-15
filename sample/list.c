@@ -25,11 +25,11 @@ int main() {
     printf("\nValue at position %d: %d", 2, intlist_get_at(list, 2));
     
     intlist_reverse(list);
+    intlist_pop_start(list);
 
-    printf("\n\nAfter reversing the list..");
+    printf("\n\nAfter reversing the list and remove the first node..");
     printf("\nValue at position %d: %d", 0, intlist_get_at(list, 0));
     printf("\nValue at position %d: %d", 1, intlist_get_at(list, 1));
-    printf("\nValue at position %d: %d", 2, intlist_get_at(list, 2));
     
     intlist_foreach(list, double_num);
 

@@ -129,6 +129,20 @@ int intlist_get_at(IntList list, size_t index) {
     return curr->value;
 }
 
+void intlist_pop_start(IntList list) {
+    if (intlist_not_exists(list) || intlist_is_empty(list)) return;
+
+    IntNode old_head = list->head;
+    if (list->size == 1) {
+        list->head = list->tail = NULL;
+        free(old_head);
+        return;
+    }
+
+    list->head = list->head->next;
+    free(old_head);
+}
+    
 size_t intlist_len(IntList list) {
     if (intlist_not_exists(list) || intlist_is_empty(list)) return 0;
 
@@ -204,4 +218,21 @@ int intlist_contains(IntList list, int target) {
         curr = curr->next;
     }
     return 0;
+}
+
+int intlist_equals(IntList list1, IntList list2) {
+    if ((intlist_not_exists(list1) || intlist_not_exists(list2)) || (intlist_is_empty(list1) ^ intlist_is_empty(list2))) return 0;
+
+    if (intlist_is_empty(list1) && intlist_is_empty(list2)) return 1;
+
+    IntNode curr1 = list1->head;
+    IntNode curr2 = list2->head;
+    while (curr1 != NULL && curr2 != NULL ) {
+        if (curr1->value != curr2->value) return 0;
+       
+        curr1 = curr1->next;
+        curr2 = curr2->next;
+    }
+
+    return curr1 == NULL && curr2 == NULL;
 }
