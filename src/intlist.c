@@ -167,6 +167,22 @@ void intlist_reverse(IntList list) {
     list->tail = old_head;
 }
 
+int* intlist_to_array(IntList list) {
+    if (intlist_not_exists(list) || intlist_is_empty(list)) return NULL;
+
+    size_t arr_size = list->size;
+
+    int* arr = (int*) malloc(sizeof (int) * arr_size);
+    if (arr == NULL) return NULL;
+
+    IntNode curr = list->head;
+    for (size_t i = 0; i < arr_size; i++, curr = curr->next) {
+        arr[i] = curr->value;
+    }
+
+    return arr;
+}
+
 void intlist_foreach(IntList list, int (*callback_func)(int value)) {
     if (intlist_not_exists(list) || intlist_is_empty(list) || callback_func == NULL) return;
 

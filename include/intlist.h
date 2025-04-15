@@ -19,6 +19,7 @@ void intlist_pop_start(IntList list);
 
 size_t intlist_len(IntList list);
 void intlist_reverse(IntList list);
+int* intlist_to_array(IntList list);
 int intlist_contains(IntList list, int target);
 int intlist_equals(IntList list1, IntList list2);
 
