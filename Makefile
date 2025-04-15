@@ -2,7 +2,6 @@ CC = gcc
 CFLAGS = -Wall -I$(INCDIR)
 
 MAINTARGET = datastructs
-SAMPLE = $(BINDIR)sample
 
 SRCDIR = src/
 INCDIR = include/ 
@@ -25,7 +24,7 @@ $(OBJDIR)%.o: $(SRCDIR)%.c
 samples: $(SAMPLES) 
 
 $(BINDIR)%: $(SAMPLEDIR)%.c lib
-	@$(CC) $(CFLAGS)  $< -L$(LIBDIR) -l$(MAINTARGET) -o $@
+	@$(CC) $(CFLAGS) $< -L$(LIBDIR) -l$(MAINTARGET) -o $@
 
 clean: 
 	@rm -f $(OBJDIR)*
