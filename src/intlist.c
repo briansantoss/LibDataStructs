@@ -16,8 +16,8 @@ static int intlist_not_exists(IntList list) {
     return list == NULL;
 }
 
-static int intlist_is_empty(IntList list) {
-    return list->head == NULL;
+int intlist_is_empty(IntList list) {
+    return intlist_not_exists(list) || list->head == NULL;
 }
 
 static IntNode intlist_create_node(int value) {
@@ -39,7 +39,7 @@ IntList intlist_init(void) {
 }
 
 void intlist_clear(IntList list) {
-    if (intlist_not_exists(list) || intlist_is_empty(list)) return;
+    if (intlist_is_empty(list)) return;
 
     IntNode curr = list->head;
     while (curr != NULL) {
@@ -66,16 +66,16 @@ void intlist_push(IntList list, int value) {
     if (new_node == NULL) return;
 
     if (intlist_is_empty(list)) {
-        list->tail = new_node;
+        list->head = list->tail = new_node;
+    } else {
+        new_node->next = list->head;
+        list->head = new_node;
     }
-
-    new_node->next = list->head;
-    list->head = new_node;
 
     list->size++;
 }
 
-void intlist_push_end(IntList list, int value) {
+void intlist_append(IntList list, int value) {
     if (intlist_not_exists(list)) return;
 
     IntNode new_node = intlist_create_node(value);
@@ -91,8 +91,8 @@ void intlist_push_end(IntList list, int value) {
     list->size++;
 }
 
-void intlist_insert_at(IntList list, int value, size_t index) {
-    if (intlist_not_exists(list) || intlist_is_empty(list) || index > list->size) return;
+void intlist_push_at(IntList list, int value, size_t index) {
+    if (intlist_not_exists(list) || index > list->size) return;
 
     if (index == 0) {
         intlist_push(list, value);
@@ -100,7 +100,7 @@ void intlist_insert_at(IntList list, int value, size_t index) {
     }
 
     if (index == list->size) {
-        intlist_push_end(list, value);
+        intlist_append(list, value);
         return;
     }
 
@@ -119,7 +119,7 @@ void intlist_insert_at(IntList list, int value, size_t index) {
 
 int intlist_get_at(IntList list, size_t index) {
     // TODO: trocar valor de retorno nesse caso
-    if (intlist_not_exists(list) || intlist_is_empty(list) || index >= list->size) return -123; // Valor temporário
+    if (intlist_is_empty(list) || index >= list->size) return -123; // Valor temporário
 
     IntNode curr = list->head;
     for (size_t i = 0; i < index; i++) {
@@ -130,41 +130,42 @@ int intlist_get_at(IntList list, size_t index) {
 }
 
 void intlist_pop_start(IntList list) {
-    if (intlist_not_exists(list) || intlist_is_empty(list)) return;
+    if (intlist_is_empty(list)) return;
 
     IntNode old_head = list->head;
     if (list->size == 1) {
         list->head = list->tail = NULL;
-        free(old_head);
-        return;
+    } else {
+        list->head = list->head->next;
     }
 
-    list->head = list->head->next;
     free(old_head);
+    list->size--;
 }
     
 size_t intlist_len(IntList list) {
-    if (intlist_not_exists(list) || intlist_is_empty(list)) return 0;
+    if (intlist_is_empty(list)) return 0;
 
     return list->size;
 }
 
 void intlist_reverse(IntList list) {
-    IntNode old_head = list->head;
-    IntNode head = NULL;
+    if (intlist_is_empty(list)) return;
 
+    IntNode prev = NULL;
+    
     IntNode curr = list->head;
     while (curr != NULL) {
         IntNode next = curr->next;
-
-        curr->next = head;
-        head = curr;
-
+        
+        curr->next = prev;
+        prev = curr;
+        
         curr = next;
     }
-
-    list->head = head;
-    list->tail = old_head;
+    
+    list->tail = list->head;
+    list->head = prev;
 }
 
 int* intlist_to_array(IntList list) {
@@ -184,7 +185,7 @@ int* intlist_to_array(IntList list) {
 }
 
 void intlist_foreach(IntList list, int (*callback_func)(int value)) {
-    if (intlist_not_exists(list) || intlist_is_empty(list) || callback_func == NULL) return;
+    if (intlist_is_empty(list) || callback_func == NULL) return;
 
     IntNode curr = list->head;
     while (curr != NULL) {
@@ -194,14 +195,14 @@ void intlist_foreach(IntList list, int (*callback_func)(int value)) {
 }
 
 IntList intlist_map(IntList list, int (*callback_func)(int value)) {
-    if (intlist_not_exists(list) || intlist_is_empty(list) || callback_func == NULL) return NULL;
+    if (intlist_is_empty(list) || callback_func == NULL) return NULL;
 
     IntList new_list = intlist_init();
     if (new_list == NULL) return NULL;
 
     IntNode curr = list->head;
     while (curr != NULL) {
-        intlist_push_end(new_list, callback_func(curr->value));
+        intlist_append(new_list, callback_func(curr->value));
 
         curr = curr->next;
     }
@@ -210,14 +211,14 @@ IntList intlist_map(IntList list, int (*callback_func)(int value)) {
 }
 
 IntList intlist_filter(IntList list, int (*callback_func)(int value)) {
-    if (intlist_not_exists(list) || intlist_is_empty(list) || callback_func == NULL) return NULL;
+    if (intlist_is_empty(list) || callback_func == NULL) return NULL;
 
     IntList new_list = intlist_init();
     if (new_list == NULL) return NULL;
 
     IntNode curr = list->head;
     while (curr != NULL) {
-        if (callback_func(curr->value)) intlist_push_end(new_list, curr->value);
+        if (callback_func(curr->value)) intlist_append(new_list, curr->value);
 
         curr = curr->next;
     }
@@ -226,7 +227,7 @@ IntList intlist_filter(IntList list, int (*callback_func)(int value)) {
 }
 
 int intlist_contains(IntList list, int target) {
-    if (intlist_not_exists(list) || intlist_is_empty(list)) return 0;
+    if (intlist_is_empty(list)) return 0;
 
     IntNode curr = list->head;
     while (curr != NULL) {
@@ -237,9 +238,9 @@ int intlist_contains(IntList list, int target) {
 }
 
 int intlist_equals(IntList list1, IntList list2) {
-    if ((intlist_not_exists(list1) || intlist_not_exists(list2)) || (intlist_is_empty(list1) ^ intlist_is_empty(list2))) return 0;
+    if (intlist_not_exists(list1) || intlist_not_exists(list2))return 0;
 
-    if (intlist_is_empty(list1) && intlist_is_empty(list2)) return 1;
+    if (intlist_is_empty(list1) != intlist_is_empty(list2)) return 0;
 
     IntNode curr1 = list1->head;
     IntNode curr2 = list2->head;

@@ -5,17 +5,18 @@
 typedef struct intlist* IntList;
 
 IntList intlist_init(void);
+int intlist_is_empty(IntList list);
 void intlist_free(IntList list);
 void intlist_clear(IntList list);
 
 void intlist_push(IntList list, int value);
-void intlist_push_end(IntList list, int value);
-void intlist_insert_at(IntList list, int value, size_t index);
+void intlist_append(IntList list, int value);
+void intlist_push_at(IntList list, int value, size_t index);
 int intlist_get_at(IntList list, size_t index);
 void intlist_pop_start(IntList list);
 // TODO: implementar
-// void intlist_pop(Intlist list);
-// void intlist_remove_at(Intlist list, size_t index);
+// void intlist_pop(IntList list);
+// void intlist_remove_at(IntList list, size_t index);
 
 size_t intlist_len(IntList list);
 void intlist_reverse(IntList list);
