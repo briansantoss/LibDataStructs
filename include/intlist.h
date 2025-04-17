@@ -14,9 +14,8 @@ void intlist_append(IntList list, int value);
 void intlist_push_at(IntList list, int value, size_t index);
 int intlist_get_at(IntList list, size_t index);
 void intlist_pop_start(IntList list);
-// TODO: implementar
-// void intlist_pop(IntList list);
-// void intlist_remove_at(IntList list, size_t index);
+void intlist_pop(IntList list);
+void intlist_pop_at(IntList list, size_t index);
 
 size_t intlist_len(IntList list);
 void intlist_reverse(IntList list);

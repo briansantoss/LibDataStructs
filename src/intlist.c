@@ -122,10 +122,7 @@ int intlist_get_at(IntList list, size_t index) {
     if (intlist_is_empty(list) || index >= list->size) return -123; // Valor temporário
 
     IntNode curr = list->head;
-    for (size_t i = 0; i < index; i++) {
-        curr = curr->next;
-    }
-
+    for (size_t i = 0; i < index; i++, curr = curr->next);
     return curr->value;
 }
 
@@ -142,7 +139,50 @@ void intlist_pop_start(IntList list) {
     free(old_head);
     list->size--;
 }
-    
+
+void intlist_pop(IntList list) {
+    if (intlist_is_empty(list)) return;
+
+    if (list->size == 1) {
+        free(list->head);
+        list->head = list->tail = NULL;
+    } else {
+        IntNode curr = list->head;
+        while (curr->next != list->tail) {
+            curr = curr->next;
+        }
+
+        free(list->tail);
+        curr->next = NULL;
+        list->tail = curr;
+    }
+
+    list->size--;
+}
+
+void intlist_pop_at(IntList list, size_t index) {
+    if (intlist_is_empty(list) || index >= list->size) return;
+
+    if (index == 0) {
+        intlist_pop_start(list);
+        return;
+    }
+
+    if (index == list->size - 1) {
+        intlist_pop(list);
+        return;
+    }
+
+    IntNode curr = list->head;
+    for (size_t i = 0; i < index - 1; i++, curr = curr->next);
+
+    IntNode target = curr->next;
+    curr->next = target->next;
+    free(target);
+
+    list->size--;
+}
+
 size_t intlist_len(IntList list) {
     if (intlist_is_empty(list)) return 0;
 
@@ -169,7 +209,7 @@ void intlist_reverse(IntList list) {
 }
 
 int* intlist_to_array(IntList list) {
-    if (intlist_not_exists(list) || intlist_is_empty(list)) return NULL;
+    if (intlist_is_empty(list)) return NULL;
 
     size_t arr_size = list->size;
 
@@ -238,7 +278,7 @@ int intlist_contains(IntList list, int target) {
 }
 
 int intlist_equals(IntList list1, IntList list2) {
-    if (intlist_not_exists(list1) || intlist_not_exists(list2))return 0;
+    if (intlist_not_exists(list1) || intlist_not_exists(list2)) return 0;
 
     if (intlist_is_empty(list1) != intlist_is_empty(list2)) return 0;
 
