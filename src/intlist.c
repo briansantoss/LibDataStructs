@@ -266,6 +266,27 @@ IntList intlist_filter(IntList list, int (*callback_func)(int value)) {
     return new_list;
 }
 
+long long intlist_reduce(IntList list, long long (*reduce_func)(long long acc, int value), long long initial) {
+    if (intlist_is_empty(list) || reduce_func == NULL) return 0;
+
+    IntNode curr = list->head;
+    long long acc = initial;
+    while (curr != NULL) {
+        acc = reduce_func(acc, curr->value);
+        curr = curr->next;
+    }
+
+    return acc;
+}
+
+static long long sum_reduce(long long acc, int value) {
+    return acc + value;
+}
+
+long long intlist_sum(IntList list) {
+    return intlist_reduce(list, sum_reduce, 0);
+}
+
 int intlist_contains(IntList list, int target) {
     if (intlist_is_empty(list)) return 0;
 

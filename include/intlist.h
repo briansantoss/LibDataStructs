@@ -28,5 +28,8 @@ int intlist_equals(IntList list1, IntList list2);
 void intlist_foreach(IntList list, int (*callback_func)(int value));
 IntList intlist_map(IntList list, int (*callback_func)(int value));
 IntList intlist_filter(IntList list, int (*callback_func)(int value));
+long long intlist_reduce(IntList list, long long (*reduce_func)(long long acc, int value), long long initial);
+
+long long intlist_sum(IntList list);
 
 #endif

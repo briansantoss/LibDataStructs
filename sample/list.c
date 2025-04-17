@@ -48,6 +48,8 @@ int main() {
     printf("\n\nA squared version.. ");
     printf("\nValue at position %d: %d", 0, intlist_get_at(squared, 0));
     printf("\nValue at position %d: %d", 1, intlist_get_at(squared, 1));
+    
+    printf("\n\nSquared version total sum: %lld", intlist_sum(squared));
 
     intlist_free(list);
     intlist_free(squared);
