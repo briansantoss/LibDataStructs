@@ -12,11 +12,11 @@ struct intlist{
     size_t size;
 };
 
-static int intlist_not_exists(IntList list) {
+static bool intlist_not_exists(IntList list) {
     return list == NULL;
 }
 
-int intlist_is_empty(IntList list) {
+bool intlist_is_empty(IntList list) {
     return intlist_not_exists(list) || list->head == NULL;
 }
 
@@ -124,6 +124,31 @@ int intlist_get_at(IntList list, size_t index) {
     IntNode curr = list->head;
     for (size_t i = 0; i < index; i++, curr = curr->next);
     return curr->value;
+}
+
+int intlist_find(IntList list, int target) {
+    if (intlist_is_empty(list)) return -1;
+
+    IntNode curr = list->head;
+    for (size_t i = 0; curr != NULL; i++, curr = curr->next) {
+        if (curr->value == target) return i;
+    }
+    
+    return -1;
+}
+
+size_t intlist_count(IntList list, int target) {
+    if (intlist_is_empty(list)) return 0;
+
+    size_t freq = 0;
+
+    IntNode curr = list->head;
+    while (curr != NULL) {
+        if (curr->value == target) return freq++;
+        curr = curr->next;
+    }
+
+    return freq;
 }
 
 void intlist_pop_start(IntList list) {
@@ -336,9 +361,9 @@ bool intlist_contains(IntList list, int target) {
 }
 
 bool intlist_equals(IntList list1, IntList list2) {
-    if (intlist_not_exists(list1) || intlist_not_exists(list2)) return 0;
+    if (intlist_not_exists(list1) || intlist_not_exists(list2)) return false;
 
-    if (intlist_is_empty(list1) != intlist_is_empty(list2)) return 0;
+    if (intlist_is_empty(list1) != intlist_is_empty(list2)) return false;
 
     IntNode curr1 = list1->head;
     IntNode curr2 = list2->head;
