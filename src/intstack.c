@@ -15,7 +15,7 @@ static int intstack_not_exists(IntStack stack) {
     return stack == NULL;
 }
 
-int intstack_is_empty(IntStack stack) {
+bool intstack_is_empty(IntStack stack) {
     return intstack_not_exists(stack) || stack->top == NULL;
 }
 
@@ -69,9 +69,8 @@ void intstack_push(IntStack stack, int value) {
     stack->size++;
 }
 
-int intstack_pop(IntStack stack) {
-    // Valor temporário
-    if (intstack_is_empty(stack)) return -123;
+bool intstack_pop(IntStack stack, int* out) {
+    if (intstack_is_empty(stack)) return false;
 
     IntNode old_top = stack->top;
     int old_top_value = old_top->value;
@@ -79,14 +78,17 @@ int intstack_pop(IntStack stack) {
     stack->top = old_top->next;
     free(old_top);
 
-    return old_top_value;
+    *out = old_top_value;
+
+    return true;
 }
 
-int intstack_peek(IntStack stack) {
-    // Valor temporário
-    if (intstack_is_empty(stack)) return -123;
+bool intstack_peek(IntStack stack, int* out) {
+    if (intstack_is_empty(stack)) return false;
 
-    return stack->top->value;
+    *out = stack->top->value;
+    
+    return true;
 }
 
 size_t intstack_len(IntStack stack) {
