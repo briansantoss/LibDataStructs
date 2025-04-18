@@ -224,6 +224,20 @@ int* intlist_to_array(IntList list) {
     return arr;
 }
 
+IntList intlist_from_array(int* arr, size_t size) {
+    if (arr == NULL) return NULL;
+
+    IntList new_list = intlist_init();
+    if (intlist_not_exists(new_list)) return NULL;
+    
+    for (size_t i = 0; i < size; i++) {
+        intlist_append(new_list, arr[i]);
+    }
+    
+    new_list->size = size;
+    return new_list;
+}
+
 void intlist_foreach(IntList list, int (*callback_func)(int value)) {
     if (intlist_is_empty(list) || callback_func == NULL) return;
 
@@ -238,7 +252,7 @@ IntList intlist_map(IntList list, int (*callback_func)(int value)) {
     if (intlist_is_empty(list) || callback_func == NULL) return NULL;
 
     IntList new_list = intlist_init();
-    if (new_list == NULL) return NULL;
+    if (intlist_not_exists(new_list)) return NULL;
 
     IntNode curr = list->head;
     while (curr != NULL) {
@@ -254,7 +268,7 @@ IntList intlist_filter(IntList list, int (*callback_func)(int value)) {
     if (intlist_is_empty(list) || callback_func == NULL) return NULL;
 
     IntList new_list = intlist_init();
-    if (new_list == NULL) return NULL;
+    if (intlist_not_exists(new_list)) return NULL;
 
     IntNode curr = list->head;
     while (curr != NULL) {
