@@ -234,7 +234,6 @@ IntList intlist_from_array(int* arr, size_t size) {
         intlist_append(new_list, arr[i]);
     }
     
-    new_list->size = size;
     return new_list;
 }
 
@@ -264,7 +263,7 @@ IntList intlist_map(IntList list, int (*callback_func)(int value)) {
     return new_list;
 }
 
-IntList intlist_filter(IntList list, int (*callback_func)(int value)) {
+IntList intlist_filter(IntList list, bool (*callback_func)(int value)) {
     if (intlist_is_empty(list) || callback_func == NULL) return NULL;
 
     IntList new_list = intlist_init();
@@ -278,6 +277,30 @@ IntList intlist_filter(IntList list, int (*callback_func)(int value)) {
     }
 
     return new_list;
+}
+
+bool intlist_all(IntList list, bool (*predicate_func)(int value)) {
+    if (intlist_is_empty(list)) return 1;
+
+    IntNode curr = list->head;
+    while (curr != NULL) {
+        if(!predicate_func(curr->value)) return false;
+        curr = curr->next;
+    }
+    
+    return true;
+}
+
+bool intlist_any(IntList list, bool (*predicate_func)(int value)) {
+    if (intlist_is_empty(list)) return 1;
+
+    IntNode curr = list->head;
+    while (curr != NULL) {
+        if(predicate_func(curr->value)) return true;
+        curr = curr->next;
+    }
+
+    return false;
 }
 
 long long intlist_reduce(IntList list, long long (*reduce_func)(long long acc, int value), long long initial) {
@@ -301,18 +324,18 @@ long long intlist_sum(IntList list) {
     return intlist_reduce(list, sum_reduce, 0);
 }
 
-int intlist_contains(IntList list, int target) {
-    if (intlist_is_empty(list)) return 0;
+bool intlist_contains(IntList list, int target) {
+    if (intlist_is_empty(list)) return false;
 
     IntNode curr = list->head;
     while (curr != NULL) {
-        if (curr->value == target) return 1;
+        if (curr->value == target) return true;
         curr = curr->next;
     }
-    return 0;
+    return false;
 }
 
-int intlist_equals(IntList list1, IntList list2) {
+bool intlist_equals(IntList list1, IntList list2) {
     if (intlist_not_exists(list1) || intlist_not_exists(list2)) return 0;
 
     if (intlist_is_empty(list1) != intlist_is_empty(list2)) return 0;

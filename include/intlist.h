@@ -1,6 +1,7 @@
 #ifndef INTLIST_H
 
 #include <stddef.h>
+#include <stdbool.h>
 
 typedef struct intlist* IntList;
 
@@ -21,14 +22,16 @@ size_t intlist_len(IntList list);
 void intlist_reverse(IntList list);
 int* intlist_to_array(IntList list);
 IntList intlist_from_array(int* arr, size_t size);
-int intlist_contains(IntList list, int target);
-int intlist_equals(IntList list1, IntList list2);
+bool intlist_contains(IntList list, int target);
+bool intlist_equals(IntList list1, IntList list2);
 
 // void intlist_sort(IntList list); 
 
 void intlist_foreach(IntList list, int (*callback_func)(int value));
 IntList intlist_map(IntList list, int (*callback_func)(int value));
-IntList intlist_filter(IntList list, int (*callback_func)(int value));
+IntList intlist_filter(IntList list, bool (*callback_func)(int value));
+bool intlist_all(IntList list, bool (*predicate_func)(int value));
+bool intlist_any(IntList list, bool (*predicate_func)(int value));
 long long intlist_reduce(IntList list, long long (*reduce_func)(long long acc, int value), long long initial);
 
 long long intlist_sum(IntList list);

@@ -1,12 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <time.h>
 #include "intlist.h"
 
 #define ARR_SIZE 10
 
-int greater_than5000(int num) {
+bool greater_than5000(int num) {
     return num > 5000;
+}
+
+bool less_than10(int num) {
+    return num < 10;
 }
 
 int main() {
@@ -43,13 +48,13 @@ int main() {
     }
 
     intlist_append(list, 5001);
-
+    
     IntList filtered = intlist_filter(list, greater_than5000);
     if (filtered == NULL) {
         perror("Error: cannot filter the list");
         return 1;
     }
-
+    
     printf("\n\nElements greater than 5000: ");
     for (int i = 0; i < intlist_len(filtered); i++) {
         printf("[ %d ] ", intlist_get_at(filtered, i));
@@ -57,6 +62,14 @@ int main() {
     
     intlist_free(list);
     intlist_free(filtered);
+    
+    printf("\n\nAll elements are greather than 5000? %s", intlist_all(filtered, greater_than5000) ? "Yes" : "No");
+    
+    intlist_append(filtered, 5000);
+    
+    printf("\n\nStill all elements are greather than 5000? %s", intlist_all(filtered, greater_than5000) ? "Yes" : "No");
+    
+    printf("\n\nAny element less than 10? %s", intlist_any(filtered, less_than10) ? "Yes" : "No");
 
     return 0;
 }
