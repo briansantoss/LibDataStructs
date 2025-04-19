@@ -31,6 +31,7 @@ bool intlist_equals(IntList list1, IntList list2);
 
 // void intlist_sort(IntList list); 
 
+IntList intlist_copy(IntList list);
 IntList intlist_map(IntList list, int (*callback_func)(int value));
 IntList intlist_filter(IntList list, bool (*predicate_func)(int value));
 int* intlist_to_array(IntList list);

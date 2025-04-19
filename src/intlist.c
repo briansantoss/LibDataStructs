@@ -289,6 +289,22 @@ void intlist_foreach(IntList list, int (*callback_func)(int value)) {
     }
 }
 
+IntList intlist_copy(IntList list) {
+    if (intlist_is_empty(list)) return NULL;
+
+    IntList copy = intlist_init();
+    if (intlist_not_exists(copy)) return NULL;
+
+    IntNode curr = list->head;
+    while (curr != NULL) {
+        intlist_append(copy, curr->value);
+
+        curr = curr->next;
+    }
+
+    return copy;
+}
+
 IntList intlist_map(IntList list, int (*callback_func)(int value)) {
     if (intlist_is_empty(list) || callback_func == NULL) return NULL;
 
@@ -367,7 +383,10 @@ long long intlist_sum(IntList list) {
 }
 
 void intlist_print(IntList list) {
-    if (intlist_is_empty(list)) puts("NULL");
+    if (intlist_is_empty(list)) {
+        printf("NULL");
+        return;
+    }
 
     IntNode curr = list->head;
     while (curr != NULL) {
