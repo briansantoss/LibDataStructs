@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "intstack.h"
+#include "stack/intstack.h"
 
 int main() {
     IntStack st = intstack_init();

@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "intlist.h"
+#include "linkedlist/intlist.h"
 
 int double_num(int num) {
     return num * 2;

@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "intstack.h"
+#include "stack/intstack.h"
 
 typedef struct intnode {
     int value;

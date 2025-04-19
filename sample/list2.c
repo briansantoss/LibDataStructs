@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
-#include "intlist.h"
+#include "linkedlist/intlist.h"
 
 #define ARR_SIZE 10
 

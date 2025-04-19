@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "intlist.h"
+#include "linkedlist/intlist.h"
 
 typedef struct intnode {
     int value;
@@ -288,15 +288,15 @@ IntList intlist_map(IntList list, int (*callback_func)(int value)) {
     return new_list;
 }
 
-IntList intlist_filter(IntList list, bool (*callback_func)(int value)) {
-    if (intlist_is_empty(list) || callback_func == NULL) return NULL;
+IntList intlist_filter(IntList list, bool (*predicate_func)(int value)) {
+    if (intlist_is_empty(list) || predicate_func == NULL) return NULL;
 
     IntList new_list = intlist_init();
     if (intlist_not_exists(new_list)) return NULL;
 
     IntNode curr = list->head;
     while (curr != NULL) {
-        if (callback_func(curr->value)) intlist_append(new_list, curr->value);
+        if (predicate_func(curr->value)) intlist_append(new_list, curr->value);
 
         curr = curr->next;
     }
