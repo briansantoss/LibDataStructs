@@ -74,12 +74,13 @@ bool intstack_pop(IntStack stack, int* out) {
     if (intstack_is_empty(stack)) return false;
 
     IntNode old_top = stack->top;
-    int old_top_value = old_top->value;
+    
+    if (out != NULL) *out = old_top->value;
 
     stack->top = old_top->next;
     free(old_top);
 
-    *out = old_top_value;
+    stack->size--;
 
     return true;
 }
