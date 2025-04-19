@@ -87,7 +87,7 @@ bool intstack_pop(IntStack stack, int* out) {
 }
 
 bool intstack_peek(IntStack stack, int* out) {
-    if (intstack_is_empty(stack)) return false;
+    if (intstack_is_empty(stack) || out == NULL) return false;
 
     *out = stack->top->value;
     
