@@ -1,6 +1,7 @@
 // #include <stdio.h>
 #include <stdlib.h>
 #include "stack/intstack.h"
+#include "linkedlist/intlist.h"
 
 typedef struct intnode {
     int value;
@@ -91,6 +92,22 @@ bool intstack_peek(IntStack stack, int* out) {
     *out = stack->top->value;
     
     return true;
+}
+
+IntList intstack_to_list(IntStack stack) {
+    if (intstack_is_empty(stack)) return NULL;
+
+    IntList new_list = intlist_init();
+    if (new_list == NULL) return NULL;
+
+    IntNode curr = stack->top;
+    while (curr != NULL) {
+        intlist_append(new_list, curr->value);
+
+        curr = curr->next;
+    }
+
+    return new_list;
 }
 
 size_t intstack_len(IntStack stack) {

@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 typedef struct intlist* IntList;
+typedef struct intstack* IntStack;
 
 IntList intlist_init(void);
 IntList intlist_from_array(int* arr, size_t size);
@@ -33,6 +34,7 @@ bool intlist_equals(IntList list1, IntList list2);
 IntList intlist_map(IntList list, int (*callback_func)(int value));
 IntList intlist_filter(IntList list, bool (*predicate_func)(int value));
 int* intlist_to_array(IntList list);
+IntStack intlist_to_stack(IntList list);
 
 void intlist_reverse(IntList list);
 void intlist_foreach(IntList list, int (*callback_func)(int value));

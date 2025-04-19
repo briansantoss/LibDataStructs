@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "linkedlist/intlist.h"
+#include "stack/intstack.h"
 
 typedef struct intnode {
     int value;
@@ -250,6 +251,21 @@ int* intlist_to_array(IntList list) {
     return arr;
 }
 
+IntStack intlist_to_stack(IntList list) {
+    if (intlist_is_empty(list)) return NULL;
+
+    IntStack new_stack = intstack_init();
+    if (new_stack == NULL) return NULL;
+
+    IntNode curr = list->head;
+    while (curr != NULL) {
+        intstack_push(new_stack, curr->value);
+        curr = curr->next;
+    }
+
+    return new_stack;
+}
+
 IntList intlist_from_array(int* arr, size_t size) {
     if (arr == NULL) return NULL;
 
@@ -306,7 +322,7 @@ IntList intlist_filter(IntList list, bool (*predicate_func)(int value)) {
 }
 
 bool intlist_all(IntList list, bool (*predicate_func)(int value)) {
-    if (intlist_is_empty(list)) return 1;
+    if (intlist_is_empty(list)) return true;
 
     IntNode curr = list->head;
     while (curr != NULL) {
@@ -318,7 +334,7 @@ bool intlist_all(IntList list, bool (*predicate_func)(int value)) {
 }
 
 bool intlist_any(IntList list, bool (*predicate_func)(int value)) {
-    if (intlist_is_empty(list)) return 1;
+    if (intlist_is_empty(list)) return false;
 
     IntNode curr = list->head;
     while (curr != NULL) {

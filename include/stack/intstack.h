@@ -6,6 +6,7 @@
 #include <stddef.h>
 
 typedef struct intstack* IntStack;
+typedef struct intlist* IntList;
 
 IntStack intstack_init(void);
 bool intstack_is_empty(IntStack stack);
@@ -16,6 +17,8 @@ bool intstack_pop(IntStack stack, int* out);
 bool intstack_peek(IntStack stack, int* out);
 
 size_t intstack_len(IntStack stack);
+
+IntList intstack_to_list(IntStack stack);
 
 // void intstack_display(IntStack stack);
 
