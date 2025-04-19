@@ -40,5 +40,6 @@ long long intlist_reduce(IntList list, long long (*reduce_func)(long long acc, i
 bool intlist_any(IntList list, bool (*predicate_func)(int value));
 bool intlist_all(IntList list, bool (*predicate_func)(int value));
 long long intlist_sum(IntList list);
+void intlist_print(IntList list);
 
 #endif

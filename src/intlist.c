@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "linkedlist/intlist.h"
 
@@ -347,6 +348,19 @@ static long long sum_reduce(long long acc, int value) {
 
 long long intlist_sum(IntList list) {
     return intlist_reduce(list, sum_reduce, 0);
+}
+
+void intlist_print(IntList list) {
+    if (intlist_is_empty(list)) puts("NULL");
+
+    IntNode curr = list->head;
+    while (curr != NULL) {
+        printf("%d", curr->value);
+        printf(" -> ");
+
+        curr = curr->next;
+    }
+    printf("NULL");
 }
 
 bool intlist_contains(IntList list, int target) {

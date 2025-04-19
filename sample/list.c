@@ -20,22 +20,19 @@ int main() {
     intlist_append(list, 20);
     intlist_push(list, 30);
 
-    printf("\nValue at position %d: %d", 0, intlist_get_at(list, 0));
-    printf("\nValue at position %d: %d", 1, intlist_get_at(list, 1));
-    printf("\nValue at position %d: %d", 2, intlist_get_at(list, 2));
+    printf("List: ");
+    intlist_print(list);
     
     intlist_reverse(list);
     intlist_pop_start(list);
 
-    printf("\n\nAfter reversing the list and remove the first node..");
-    printf("\nValue at position %d: %d", 0, intlist_get_at(list, 0));
-    printf("\nValue at position %d: %d", 1, intlist_get_at(list, 1));
+    printf("\n\nAfter reversing the list and remove the first node: ");
+    intlist_print(list);
     
     intlist_foreach(list, double_num);
 
-    printf("\n\nAfter double each element in the list..");
-    printf("\nValue at position %d: %d", 0, intlist_get_at(list, 0));
-    printf("\nValue at position %d: %d", 1, intlist_get_at(list, 1));
+    printf("\n\nAfter double each element in the list: ");
+    intlist_print(list);
     
     printf("\nThe list %s contain the value 1234", intlist_contains(list, 1234) ? "does" : "does not");
     
@@ -45,9 +42,8 @@ int main() {
         return 1;
     }
     
-    printf("\n\nA squared version.. ");
-    printf("\nValue at position %d: %d", 0, intlist_get_at(squared, 0));
-    printf("\nValue at position %d: %d", 1, intlist_get_at(squared, 1));
+    printf("\n\nA squared version: ");
+    intlist_print(squared);
     
     printf("\n\nSquared version total sum: %lld", intlist_sum(squared));
 

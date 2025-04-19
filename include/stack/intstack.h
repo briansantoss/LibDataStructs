@@ -17,4 +17,6 @@ bool intstack_peek(IntStack stack, int* out);
 
 size_t intstack_len(IntStack stack);
 
+// void intstack_display(IntStack stack);
+
 #endif

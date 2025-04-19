@@ -35,17 +35,13 @@ int main() {
     }
     
     printf("\nList created:  ");
-    for (int i = 0; i < intlist_len(list); i++) {
-        printf("[ %d ] ", intlist_get_at(list, i));
-    }
+    intlist_print(list);
     
     intlist_pop(list);
     intlist_pop(list);
     
     printf("\n\nList after modifications: ");
-    for (int i = 0; i < intlist_len(list); i++) {
-        printf("[ %d ] ", intlist_get_at(list, i));
-    }
+    intlist_print(list);
 
     intlist_append(list, 5001);
     
@@ -56,9 +52,7 @@ int main() {
     }
     
     printf("\n\nElements greater than 5000: ");
-    for (int i = 0; i < intlist_len(filtered); i++) {
-        printf("[ %d ] ", intlist_get_at(filtered, i));
-    }    
+    intlist_print(filtered);
     
     intlist_free(list);
     intlist_free(filtered);
