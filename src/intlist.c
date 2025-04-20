@@ -107,6 +107,7 @@ void intlist_push_at(IntList list, int value, size_t index) {
     }
 
     IntNode new_node = intlist_create_node(value);
+    if (new_node == NULL) return;
 
     IntNode curr = list->head;
     for (size_t i = 0; i < index - 1; i++) {
@@ -146,7 +147,7 @@ size_t intlist_count(IntList list, int target) {
 
     IntNode curr = list->head;
     while (curr != NULL) {
-        if (curr->value == target) return freq++;
+        if (curr->value == target) freq++;
         curr = curr->next;
     }
 
@@ -412,16 +413,16 @@ bool intlist_contains(IntList list, int target) {
 bool intlist_equals(IntList list1, IntList list2) {
     if (intlist_not_exists(list1) || intlist_not_exists(list2)) return false;
 
-    if (intlist_is_empty(list1) != intlist_is_empty(list2)) return false;
+    if (list1->size != list2->size) return false;
 
     IntNode curr1 = list1->head;
     IntNode curr2 = list2->head;
     while (curr1 != NULL && curr2 != NULL ) {
-        if (curr1->value != curr2->value) return 0;
+        if (curr1->value != curr2->value) return false;
        
         curr1 = curr1->next;
         curr2 = curr2->next;
     }
 
-    return curr1 == NULL && curr2 == NULL;
+    return true;
 }
