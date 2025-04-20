@@ -34,6 +34,7 @@ bool intlist_equals(IntList list1, IntList list2);
 IntList intlist_copy(IntList list);
 IntList intlist_map(IntList list, int (*callback_func)(int value));
 IntList intlist_filter(IntList list, bool (*predicate_func)(int value));
+IntList intlist_zip(IntList list1, IntList list2);
 int* intlist_to_array(IntList list);
 IntStack intlist_to_stack(IntList list);
 

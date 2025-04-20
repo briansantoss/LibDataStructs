@@ -338,6 +338,25 @@ IntList intlist_filter(IntList list, bool (*predicate_func)(int value)) {
     return new_list;
 }
 
+IntList intlist_zip(IntList list1, IntList list2) {
+    if (intlist_is_empty(list1) || intlist_is_empty(list2)) return NULL;
+
+    IntList new_list = intlist_init();
+    if (intlist_not_exists(new_list)) return NULL;
+
+    IntNode curr1 = list1->head;
+    IntNode curr2 = list2->head;
+    while (curr1 != NULL && curr2 != NULL) {
+        intlist_append(new_list, curr1->value);
+        intlist_append(new_list, curr2->value);
+
+        curr1 = curr1->next;
+        curr2 = curr2->next;
+    }
+
+    return new_list;
+}
+
 bool intlist_all(IntList list, bool (*predicate_func)(int value)) {
     if (intlist_is_empty(list)) return true;
 
