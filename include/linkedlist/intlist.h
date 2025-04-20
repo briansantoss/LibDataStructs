@@ -8,7 +8,7 @@
 typedef struct intlist* IntList;
 typedef struct intstack* IntStack;
 
-IntList intlist_init(void);
+IntList intlist_new(void);
 IntList intlist_from_array(int* arr, size_t size);
 void intlist_clear(IntList list);
 void intlist_free(IntList list);

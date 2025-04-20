@@ -31,7 +31,7 @@ static IntNode intlist_create_node(int value) {
     return new_node;
 }
 
-IntList intlist_init(void) {
+IntList intlist_new(void) {
     IntList new_list = (IntList) malloc(sizeof (struct intlist));
     if (intlist_not_exists(new_list)) return NULL;
 
@@ -255,7 +255,7 @@ int* intlist_to_array(IntList list) {
 IntStack intlist_to_stack(IntList list) {
     if (intlist_is_empty(list)) return NULL;
 
-    IntStack new_stack = intstack_init();
+    IntStack new_stack = intstack_new();
     if (new_stack == NULL) return NULL;
 
     IntNode curr = list->head;
@@ -270,7 +270,7 @@ IntStack intlist_to_stack(IntList list) {
 IntList intlist_from_array(int* arr, size_t size) {
     if (arr == NULL) return NULL;
 
-    IntList new_list = intlist_init();
+    IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
     
     for (size_t i = 0; i < size; i++) {
@@ -293,7 +293,7 @@ void intlist_foreach(IntList list, int (*callback_func)(int value)) {
 IntList intlist_copy(IntList list) {
     if (intlist_is_empty(list)) return NULL;
 
-    IntList copy = intlist_init();
+    IntList copy = intlist_new();
     if (intlist_not_exists(copy)) return NULL;
 
     IntNode curr = list->head;
@@ -309,7 +309,7 @@ IntList intlist_copy(IntList list) {
 IntList intlist_map(IntList list, int (*callback_func)(int value)) {
     if (intlist_is_empty(list) || callback_func == NULL) return NULL;
 
-    IntList new_list = intlist_init();
+    IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
 
     IntNode curr = list->head;
@@ -325,7 +325,7 @@ IntList intlist_map(IntList list, int (*callback_func)(int value)) {
 IntList intlist_filter(IntList list, bool (*predicate_func)(int value)) {
     if (intlist_is_empty(list) || predicate_func == NULL) return NULL;
 
-    IntList new_list = intlist_init();
+    IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
 
     IntNode curr = list->head;
@@ -341,7 +341,7 @@ IntList intlist_filter(IntList list, bool (*predicate_func)(int value)) {
 IntList intlist_zip(IntList list1, IntList list2) {
     if (intlist_is_empty(list1) || intlist_is_empty(list2)) return NULL;
 
-    IntList new_list = intlist_init();
+    IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
 
     IntNode curr1 = list1->head;

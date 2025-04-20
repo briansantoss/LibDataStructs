@@ -8,7 +8,7 @@
 typedef struct intstack* IntStack;
 typedef struct intlist* IntList;
 
-IntStack intstack_init(void);
+IntStack intstack_new(void);
 bool intstack_is_empty(IntStack stack);
 void intstack_clear(IntStack stack);
 void intstack_free(IntStack stack);

@@ -30,7 +30,7 @@ static IntNode intstack_create_node(int value) {
     return new_node;
 }
 
-IntStack intstack_init(void) {
+IntStack intstack_new(void) {
     IntStack new_stack = (IntStack) malloc(sizeof (struct intstack));
     if (intstack_not_exists(new_stack)) return NULL;
 
@@ -97,7 +97,7 @@ bool intstack_peek(IntStack stack, int* out) {
 IntList intstack_to_list(IntStack stack) {
     if (intstack_is_empty(stack)) return NULL;
 
-    IntList new_list = intlist_init();
+    IntList new_list = intlist_new();
     if (new_list == NULL) return NULL;
 
     IntNode curr = stack->top;

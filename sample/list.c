@@ -10,7 +10,7 @@ int square_num(int num) {
 }
 
 int main() {
-    IntList list = intlist_init();
+    IntList list = intlist_new();
     if (list == NULL) {
         perror("Error: cannot create the list.");
         return 1;
