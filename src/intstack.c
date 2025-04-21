@@ -13,7 +13,7 @@ struct intstack {
     size_t size;
 };
 
-static int intstack_not_exists(IntStack stack) {
+static bool intstack_not_exists(IntStack stack) {
     return stack == NULL;
 }
 
@@ -111,7 +111,5 @@ IntList intstack_to_list(IntStack stack) {
 }
 
 size_t intstack_len(IntStack stack) {
-    if (intstack_not_exists(stack)) return 0;
-
-    return stack->size;
+    return intstack_not_exists(stack) ? 0 : stack->size;
 }

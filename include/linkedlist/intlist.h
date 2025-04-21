@@ -1,12 +1,13 @@
 #ifndef INTLIST_H
-
 #define INTLIST_H
 
 #include <stddef.h>
 #include <stdbool.h>
 
-typedef struct intlist* IntList;
 typedef struct intstack* IntStack;
+typedef struct IntQueue* IntQueue;
+
+typedef struct intlist* IntList;
 
 IntList intlist_new(void);
 IntList intlist_from_array(int* arr, size_t size);
@@ -23,8 +24,8 @@ void intlist_pop(IntList list);
 
 bool intlist_is_empty(IntList list);
 size_t intlist_len(IntList list);
-int intlist_get_at(IntList list, size_t index);
-int intlist_find(IntList list, int target);
+bool intlist_get_at(IntList list, size_t index, int* out);
+int intlist_index(IntList list, int target);
 size_t intlist_count(IntList list, int target);
 bool intlist_contains(IntList list, int target);
 bool intlist_equals(IntList list1, IntList list2);
@@ -37,6 +38,7 @@ IntList intlist_filter(IntList list, bool (*predicate_func)(int value));
 IntList intlist_zip(IntList list1, IntList list2);
 int* intlist_to_array(IntList list);
 IntStack intlist_to_stack(IntList list);
+IntStack intlist_to_queue(IntList list);
 
 void intlist_reverse(IntList list);
 void intlist_foreach(IntList list, int (*callback_func)(int value));

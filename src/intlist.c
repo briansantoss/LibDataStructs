@@ -120,16 +120,18 @@ void intlist_push_at(IntList list, int value, size_t index) {
     list->size++;
 }
 
-int intlist_get_at(IntList list, size_t index) {
-    // TODO: trocar valor de retorno nesse caso
-    if (intlist_is_empty(list) || index >= list->size) return -123; // Valor temporário
+bool intlist_get_at(IntList list, size_t index, int* out) {
+    if (intlist_is_empty(list) || out == NULL || index >= list->size) return false;
 
     IntNode curr = list->head;
     for (size_t i = 0; i < index; i++, curr = curr->next);
-    return curr->value;
+
+    *out = curr->value;
+
+    return true;
 }
 
-int intlist_find(IntList list, int target) {
+int intlist_index(IntList list, int target) {
     if (intlist_is_empty(list)) return -1;
 
     IntNode curr = list->head;
@@ -212,9 +214,7 @@ void intlist_pop_at(IntList list, size_t index) {
 }
 
 size_t intlist_len(IntList list) {
-    if (intlist_is_empty(list)) return 0;
-
-    return list->size;
+    return intlist_is_empty(list) ? 0 : list->size;
 }
 
 void intlist_reverse(IntList list) {

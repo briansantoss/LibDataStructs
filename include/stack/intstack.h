@@ -5,8 +5,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef struct intstack* IntStack;
 typedef struct intlist* IntList;
+typedef struct intqueue* IntQueue;
+
+typedef struct intstack* IntStack;
 
 IntStack intstack_new(void);
 bool intstack_is_empty(IntStack stack);
@@ -20,6 +22,6 @@ size_t intstack_len(IntStack stack);
 
 IntList intstack_to_list(IntStack stack);
 
-// void intstack_display(IntStack stack);
+// void intstack_print(IntStack stack);
 
 #endif
