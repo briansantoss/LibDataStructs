@@ -2,8 +2,8 @@
 
 #define INTSTACK_H
 
-#include <stdbool.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 typedef struct intlist* IntList;
 typedef struct intqueue* IntQueue;

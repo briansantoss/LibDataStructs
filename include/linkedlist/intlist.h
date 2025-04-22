@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 typedef struct intstack* IntStack;
-typedef struct IntQueue* IntQueue;
+typedef struct intqueue* IntQueue;
 
 typedef struct intlist* IntList;
 
@@ -38,7 +38,7 @@ IntList intlist_filter(IntList list, bool (*predicate_func)(int value));
 IntList intlist_zip(IntList list1, IntList list2);
 int* intlist_to_array(IntList list);
 IntStack intlist_to_stack(IntList list);
-IntStack intlist_to_queue(IntList list);
+IntQueue intlist_to_queue(IntList list);
 
 void intlist_reverse(IntList list);
 void intlist_foreach(IntList list, int (*callback_func)(int value));
