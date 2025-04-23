@@ -1,7 +1,12 @@
 CC = gcc 
 CFLAGS = -Wall -I$(INCDIR)
 
-MAINTARGET = datastructs
+ifeq ($(DEBUG),1)
+	CFLAGS += -DDEBUG
+endif
+
+BASENAME = datastructs
+LIB_STATIC = $(BASENAME).a
 
 SRCDIR = src/
 INCDIR = include/ 
@@ -12,11 +17,11 @@ SAMPLEDIR = sample/
 
 SRCS = $(wildcard $(SRCDIR)*.c)
 OBJS = $(patsubst $(SRCDIR)%.c, $(OBJDIR)%.o, $(SRCS))
-SAMPLESSRCS = $(wildcard $(SAMPLEDIR)*.c)
-SAMPLES = $(patsubst $(SAMPLEDIR)%.c, $(BINDIR)%, $(SAMPLESSRCS))
+SAMPLES_SRCS = $(wildcard $(SAMPLEDIR)*.c)
+SAMPLES = $(patsubst $(SAMPLEDIR)%.c, $(BINDIR)%, $(SAMPLES_SRCS))
 
 lib: $(OBJS)
-	@ar rcs $(LIBDIR)lib$(MAINTARGET).a $^
+	@ar rcs $(LIBDIR)lib$(LIB_STATIC) $^
 
 $(OBJDIR)%.o: $(SRCDIR)%.c 
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -24,7 +29,10 @@ $(OBJDIR)%.o: $(SRCDIR)%.c
 samples: $(SAMPLES) 
 
 $(BINDIR)%: $(SAMPLEDIR)%.c lib
-	@$(CC) $(CFLAGS) $< -L$(LIBDIR) -l$(MAINTARGET) -o $@
+	@$(CC) $(CFLAGS) $< -L$(LIBDIR) -l$(BASENAME) -o $@
+
+debug:
+	@make DEBUG=1
 
 clean: 
 	@rm -f $(OBJDIR)*
