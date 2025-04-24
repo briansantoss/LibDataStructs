@@ -26,7 +26,7 @@ lib: $(OBJS)
 $(OBJDIR)%.o: $(SRCDIR)%.c 
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-samples: $(SAMPLES) 
+samples: $(SAMPLES)
 
 $(BINDIR)%: $(SAMPLEDIR)%.c lib
 	@$(CC) $(CFLAGS) $< -L$(LIBDIR) -l$(BASENAME) -o $@

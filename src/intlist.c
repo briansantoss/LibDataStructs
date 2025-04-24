@@ -14,6 +14,8 @@ struct intlist{
     size_t size;
 };
 
+extern bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
+
 static bool intlist_not_exists(IntList list) {
     return list == NULL;
 }
@@ -35,8 +37,14 @@ IntList intlist_new(void) {
     IntList new_list = (IntList) malloc(sizeof (struct intlist));
     if (intlist_not_exists(new_list)) return NULL;
 
+    if (!memmngr_register(new_list, (void (*)(void*)) intlist_free)) {
+        free(new_list);
+        return NULL;
+    }
+
     new_list->head = new_list->tail = NULL;
     new_list->size = 0;
+
     return new_list;
 }
 
@@ -48,7 +56,7 @@ void intlist_clear(IntList list) {
         IntNode next = curr->next;
 
         free(curr);
-
+        
         curr = next;
     }
 
@@ -66,7 +74,7 @@ void intlist_push(IntList list, int value) {
 
     IntNode new_node = intlist_create_node(value);
     if (new_node == NULL) return;
-
+    
     if (intlist_is_empty(list)) {
         list->head = list->tail = new_node;
     } else {
@@ -79,7 +87,7 @@ void intlist_push(IntList list, int value) {
 
 void intlist_append(IntList list, int value) {
     if (intlist_not_exists(list)) return;
-
+    
     IntNode new_node = intlist_create_node(value);
     if (new_node == NULL) return;
     
@@ -89,45 +97,45 @@ void intlist_append(IntList list, int value) {
         list->tail->next = new_node;
         list->tail = new_node;
     }
-
+    
     list->size++;
 }
 
 void intlist_push_at(IntList list, int value, size_t index) {
     if (intlist_not_exists(list) || index > list->size) return;
-
+    
     if (index == 0) {
         intlist_push(list, value);
         return;
     }
-
+    
     if (index == list->size) {
         intlist_append(list, value);
         return;
     }
-
+    
     IntNode new_node = intlist_create_node(value);
     if (new_node == NULL) return;
-
+    
     IntNode curr = list->head;
     for (size_t i = 0; i < index - 1; i++) {
         curr = curr->next;
     }
-
+    
     new_node->next = curr->next;
     curr->next = new_node;
-
+    
     list->size++;
 }
 
 bool intlist_get_at(IntList list, size_t index, int* out) {
     if (intlist_is_empty(list) || out == NULL || index >= list->size) return false;
-
+    
     IntNode curr = list->head;
     for (size_t i = 0; i < index; i++, curr = curr->next);
-
+    
     *out = curr->value;
-
+    
     return true;
 }
 
@@ -144,15 +152,15 @@ int intlist_index(IntList list, int target) {
 
 size_t intlist_count(IntList list, int target) {
     if (intlist_is_empty(list)) return 0;
-
+    
     size_t freq = 0;
-
+    
     IntNode curr = list->head;
     while (curr != NULL) {
         if (curr->value == target) freq++;
         curr = curr->next;
     }
-
+    
     return freq;
 }
 
@@ -172,7 +180,7 @@ void intlist_pop_start(IntList list) {
 
 void intlist_pop(IntList list) {
     if (intlist_is_empty(list)) return;
-
+    
     if (list->size == 1) {
         free(list->head);
         list->head = list->tail = NULL;
@@ -186,7 +194,7 @@ void intlist_pop(IntList list) {
         curr->next = NULL;
         list->tail = curr;
     }
-
+    
     list->size--;
 }
 
@@ -197,19 +205,19 @@ void intlist_pop_at(IntList list, size_t index) {
         intlist_pop_start(list);
         return;
     }
-
+    
     if (index == list->size - 1) {
         intlist_pop(list);
         return;
     }
-
+    
     IntNode curr = list->head;
     for (size_t i = 0; i < index - 1; i++, curr = curr->next);
-
+    
     IntNode target = curr->next;
     curr->next = target->next;
     free(target);
-
+    
     list->size--;
 }
 
@@ -219,7 +227,7 @@ size_t intlist_len(IntList list) {
 
 void intlist_reverse(IntList list) {
     if (intlist_is_empty(list)) return;
-
+    
     IntNode prev = NULL;
     
     IntNode curr = list->head;
@@ -240,30 +248,31 @@ int* intlist_to_array(IntList list) {
     if (intlist_is_empty(list)) return NULL;
 
     size_t arr_size = list->size;
-
+    
     int* arr = (int*) malloc(sizeof (int) * arr_size);
     if (arr == NULL) return NULL;
-
+    
     IntNode curr = list->head;
     for (size_t i = 0; i < arr_size; i++, curr = curr->next) {
         arr[i] = curr->value;
     }
-
+    
     return arr;
 }
 
 IntStack intlist_to_stack(IntList list) {
     if (intlist_is_empty(list)) return NULL;
-
+    
     IntStack new_stack = intstack_new();
     if (new_stack == NULL) return NULL;
-
+    
     IntNode curr = list->head;
     while (curr != NULL) {
         intstack_push(new_stack, curr->value);
         curr = curr->next;
     }
-
+    
+    memmngr_register(new_stack, (void (*)(void*)) intstack_free);
     return new_stack;
 }
 
@@ -282,7 +291,7 @@ IntList intlist_from_array(int* arr, size_t size) {
 
 void intlist_foreach(IntList list, int (*callback_func)(int value)) {
     if (intlist_is_empty(list) || callback_func == NULL) return;
-
+    
     IntNode curr = list->head;
     while (curr != NULL) {
         curr->value = callback_func(curr->value);
@@ -292,17 +301,17 @@ void intlist_foreach(IntList list, int (*callback_func)(int value)) {
 
 IntList intlist_copy(IntList list) {
     if (intlist_is_empty(list)) return NULL;
-
+    
     IntList copy = intlist_new();
     if (intlist_not_exists(copy)) return NULL;
-
+    
     IntNode curr = list->head;
     while (curr != NULL) {
         intlist_append(copy, curr->value);
-
+        
         curr = curr->next;
     }
-
+    
     return copy;
 }
 
@@ -311,14 +320,14 @@ IntList intlist_map(IntList list, int (*callback_func)(int value)) {
 
     IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
-
+    
     IntNode curr = list->head;
     while (curr != NULL) {
         intlist_append(new_list, callback_func(curr->value));
-
+        
         curr = curr->next;
     }
-
+    
     return new_list;
 }
 
@@ -327,14 +336,14 @@ IntList intlist_filter(IntList list, bool (*predicate_func)(int value)) {
 
     IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
-
+    
     IntNode curr = list->head;
     while (curr != NULL) {
         if (predicate_func(curr->value)) intlist_append(new_list, curr->value);
-
+        
         curr = curr->next;
     }
-
+    
     return new_list;
 }
 
@@ -343,17 +352,17 @@ IntList intlist_zip(IntList list1, IntList list2) {
 
     IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
-
+    
     IntNode curr1 = list1->head;
     IntNode curr2 = list2->head;
     while (curr1 != NULL && curr2 != NULL) {
         intlist_append(new_list, curr1->value);
         intlist_append(new_list, curr2->value);
-
+        
         curr1 = curr1->next;
         curr2 = curr2->next;
     }
-
+    
     return new_list;
 }
 

@@ -13,6 +13,8 @@ struct intstack {
     size_t size;
 };
 
+extern bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
+
 static bool intstack_not_exists(IntStack stack) {
     return stack == NULL;
 }
@@ -34,8 +36,14 @@ IntStack intstack_new(void) {
     IntStack new_stack = (IntStack) malloc(sizeof (struct intstack));
     if (intstack_not_exists(new_stack)) return NULL;
 
+    if (!memmngr_register(new_stack, (void (*)(void*)) intstack_free)) {
+        free(new_stack);
+        return NULL;
+    }
+
     new_stack->size = 0;
     new_stack->top = NULL;
+
     return new_stack;
 }
 

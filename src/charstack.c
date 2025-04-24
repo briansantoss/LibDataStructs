@@ -13,6 +13,8 @@ struct charstack {
     size_t size;
 };
 
+extern bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
+
 static bool charstack_not_exists(CharStack stack) {
     return stack == NULL;
 }
@@ -27,15 +29,22 @@ static CharNode charstack_create_node(int value) {
 
     new_node->next = NULL;
     new_node->value = value;
+
     return new_node;
 }
 
 CharStack charstack_new(void) {
     CharStack new_stack = (CharStack) malloc(sizeof (struct charstack));
     if (charstack_not_exists(new_stack)) return NULL;
+    
+    if (!memmngr_register(new_stack, (void (*)(void*)) charstack_free)) {
+        free(new_stack);
+        return NULL;
+    }
 
     new_stack->size = 0;
     new_stack->top = NULL;
+
     return new_stack;
 }
 

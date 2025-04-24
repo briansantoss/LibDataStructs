@@ -47,8 +47,5 @@ int main() {
     
     printf("\n\nSquared version total sum: %lld", intlist_sum(squared));
 
-    intlist_free(list);
-    intlist_free(squared);
-
     return 0;
 }

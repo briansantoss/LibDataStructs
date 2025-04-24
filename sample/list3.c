@@ -50,15 +50,9 @@ int main() {
         return 1;
     }
 
-
     printf("\nZip result list after remove: ");
     intlist_print(zipped2);
 
-    intlist_free(odds);
-    intlist_free(evens);
-    intlist_free(zipped);
-    intlist_free(zipped2);
-    
     printf("\n");
     for (int i = 0; i < 50; i++) printf("-");
 
@@ -100,10 +94,6 @@ int main() {
     charlist_print(zipped_chars);
     
     printf("\nIndex of letter 'g' in the result: %d ", charlist_index(zipped_chars, 'g'));
-
-    charlist_free(chlist);
-    charlist_free(chlist2);
-    charlist_free(zipped_chars);
 
     return 0;
 }

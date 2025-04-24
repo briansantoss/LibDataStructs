@@ -69,8 +69,6 @@ int main() {
         return 1;
     }
     
-    intlist_free(list);
-    
     printf("\n\nElements greater than 5000: ");
     intlist_print(filtered);
     
@@ -82,8 +80,5 @@ int main() {
     
     printf("\n\nAny element less than 10? %s", intlist_any(filtered, less_than10) ? "Yes" : "No");
     
-    intlist_free(list2);
-    intlist_free(filtered);
-
     return 0;
 }

@@ -14,6 +14,8 @@ struct charlist{
     size_t size;
 };
 
+extern bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
+
 static bool charlist_not_exists(CharList list) {
     return list == NULL;
 }
@@ -35,8 +37,14 @@ CharList charlist_new(void) {
     CharList new_list = (CharList) malloc(sizeof (struct charlist));
     if (charlist_not_exists(new_list)) return NULL;
 
+    if (!memmngr_register(new_list, (void (*)(void*)) charlist_free)) {
+        free(new_list);
+        return NULL;
+    }
+    
     new_list->head = new_list->tail = NULL;
     new_list->size = 0;
+
     return new_list;
 }
 
