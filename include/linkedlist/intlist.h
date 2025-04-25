@@ -14,9 +14,9 @@ IntList intlist_from_array(int* arr, size_t size);
 void intlist_clear(IntList list);
 void intlist_free(IntList list);
 
-void intlist_push(IntList list, int value);
-void intlist_push_at(IntList list, int value, size_t index);
-void intlist_append(IntList list, int value);
+bool intlist_push(IntList list, int value);
+bool intlist_push_at(IntList list, int value, size_t index);
+bool intlist_append(IntList list, int value);
 
 void intlist_pop_start(IntList list);
 void intlist_pop_at(IntList list, size_t index);

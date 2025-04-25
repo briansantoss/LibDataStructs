@@ -69,11 +69,11 @@ void intlist_free(IntList list) {
     free(list);
 }
 
-void intlist_push(IntList list, int value) {
-    if (intlist_not_exists(list)) return;
+bool intlist_push(IntList list, int value) {
+    if (intlist_not_exists(list)) return false;
 
     IntNode new_node = intlist_create_node(value);
-    if (new_node == NULL) return;
+    if (new_node == NULL) return false;
     
     if (intlist_is_empty(list)) {
         list->head = list->tail = new_node;
@@ -83,13 +83,14 @@ void intlist_push(IntList list, int value) {
     }
 
     list->size++;
+    return true;
 }
 
-void intlist_append(IntList list, int value) {
-    if (intlist_not_exists(list)) return;
+bool intlist_append(IntList list, int value) {
+    if (intlist_not_exists(list)) return false;
     
     IntNode new_node = intlist_create_node(value);
-    if (new_node == NULL) return;
+    if (new_node == NULL) return false;
     
     if (intlist_is_empty(list)) {
         list->head = list->tail = new_node;
@@ -99,23 +100,17 @@ void intlist_append(IntList list, int value) {
     }
     
     list->size++;
+    return true;
 }
 
-void intlist_push_at(IntList list, int value, size_t index) {
-    if (intlist_not_exists(list) || index > list->size) return;
+bool intlist_push_at(IntList list, int value, size_t index) {
+    if (intlist_not_exists(list) || index > list->size) return false;
     
-    if (index == 0) {
-        intlist_push(list, value);
-        return;
-    }
-    
-    if (index == list->size) {
-        intlist_append(list, value);
-        return;
-    }
+    if (index == 0) return intlist_push(list, value);
+    if (index == list->size) return intlist_append(list, value);
     
     IntNode new_node = intlist_create_node(value);
-    if (new_node == NULL) return;
+    if (new_node == NULL) return false;
     
     IntNode curr = list->head;
     for (size_t i = 0; i < index - 1; i++) {
@@ -126,6 +121,7 @@ void intlist_push_at(IntList list, int value, size_t index) {
     curr->next = new_node;
     
     list->size++;
+    return true;
 }
 
 bool intlist_get_at(IntList list, size_t index, int* out) {

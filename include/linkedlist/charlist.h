@@ -14,9 +14,9 @@ CharList charlist_from_string(const char* str, size_t size);
 void charlist_clear(CharList list);
 void charlist_free(CharList list);
 
-void charlist_push(CharList list, char value);
-void charlist_push_at(CharList list, char value, size_t index);
-void charlist_append(CharList list, char value);
+bool charlist_push(CharList list, char value);
+bool charlist_push_at(CharList list, char value, size_t index);
+bool charlist_append(CharList list, char value);
 
 void charlist_pop_start(CharList list);
 void charlist_pop_at(CharList list, size_t index);

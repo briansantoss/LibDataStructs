@@ -69,11 +69,11 @@ void charlist_free(CharList list) {
     free(list);
 }
 
-void charlist_push(CharList list, char value) {
-    if (charlist_not_exists(list)) return;
+bool charlist_push(CharList list, char value) {
+    if (charlist_not_exists(list)) return false;
 
     CharNode new_node = charlist_create_node(value);
-    if (new_node == NULL) return;
+    if (new_node == NULL) return false;
 
     if (charlist_is_empty(list)) {
         list->head = list->tail = new_node;
@@ -83,13 +83,14 @@ void charlist_push(CharList list, char value) {
     }
 
     list->size++;
+    return true;
 }
 
-void charlist_append(CharList list, char value) {
-    if (charlist_not_exists(list)) return;
+bool charlist_append(CharList list, char value) {
+    if (charlist_not_exists(list)) return false;
 
     CharNode new_node = charlist_create_node(value);
-    if (new_node == NULL) return;
+    if (new_node == NULL) return false;
     
     if (charlist_is_empty(list)) {
         list->head = list->tail = new_node;
@@ -99,23 +100,17 @@ void charlist_append(CharList list, char value) {
     }
 
     list->size++;
+    return true;
 }
 
-void charlist_push_at(CharList list, char value, size_t index) {
-    if (charlist_not_exists(list) || index > list->size) return;
+bool charlist_push_at(CharList list, char value, size_t index) {
+    if (charlist_not_exists(list) || index > list->size) return false;
 
-    if (index == 0) {
-        charlist_push(list, value);
-        return;
-    }
-
-    if (index == list->size) {
-        charlist_append(list, value);
-        return;
-    }
+    if (index == 0) return charlist_push(list, value);
+    if (index == list->size) return charlist_append(list, value);
 
     CharNode new_node = charlist_create_node(value);
-    if (new_node == NULL) return;
+    if (new_node == NULL) return false;
 
     CharNode curr = list->head;
     for (size_t i = 0; i < index - 1; i++) {
@@ -126,6 +121,7 @@ void charlist_push_at(CharList list, char value, size_t index) {
     curr->next = new_node;
 
     list->size++;
+    return true;
 }
 
 bool charlist_get_at(CharList list, size_t index, char* out) {
