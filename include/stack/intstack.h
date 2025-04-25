@@ -14,7 +14,8 @@ IntStack intstack_new(void);
 bool intstack_is_empty(IntStack stack);
 void intstack_clear(IntStack stack);
 void intstack_free(IntStack stack);
-void intstack_push(IntStack stack, int value);
+
+bool intstack_push(IntStack stack, int value);
 bool intstack_pop(IntStack stack, int* out);
 bool intstack_peek(IntStack stack, int* out);
 

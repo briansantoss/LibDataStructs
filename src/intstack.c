@@ -67,16 +67,18 @@ void intstack_free(IntStack stack) {
     free(stack);
 }
 
-void intstack_push(IntStack stack, int value) {
-    if (intstack_not_exists(stack)) return;
+bool intstack_push(IntStack stack, int value) {
+    if (intstack_not_exists(stack)) return false;
 
     IntNode new_node = intstack_create_node(value);
-    if (new_node == NULL) return;
+    if (new_node == NULL) return false;
 
     new_node->next = stack->top;
     stack->top = new_node;
 
     stack->size++;
+    
+    return true;
 }
 
 bool intstack_pop(IntStack stack, int* out) {
@@ -102,6 +104,10 @@ bool intstack_peek(IntStack stack, int* out) {
     return true;
 }
 
+size_t intstack_len(IntStack stack) {
+    return intstack_not_exists(stack) ? 0 : stack->size;
+}
+
 IntList intstack_to_list(IntStack stack) {
     if (intstack_is_empty(stack)) return NULL;
 
@@ -110,8 +116,10 @@ IntList intstack_to_list(IntStack stack) {
 
     IntNode curr = stack->top;
     while (curr != NULL) {
-        intlist_append(new_list, curr->value);
-
+        if (!intlist_append(new_list, curr->value)) {
+            memmngr_rollback();
+            return NULL;
+        }
         curr = curr->next;
     }
 

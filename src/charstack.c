@@ -68,16 +68,17 @@ void charstack_free(CharStack stack) {
     free(stack);
 }
 
-void charstack_push(CharStack stack, char value) {
-    if (charstack_not_exists(stack)) return;
+bool charstack_push(CharStack stack, char value) {
+    if (charstack_not_exists(stack)) return false;
 
     CharNode new_node = charstack_create_node(value);
-    if (new_node == NULL) return;
+    if (new_node == NULL) return false;
 
     new_node->next = stack->top;
     stack->top = new_node;
 
     stack->size++;
+    return true;
 }
 
 bool charstack_pop(CharStack stack, char* out) {
@@ -103,6 +104,10 @@ bool charstack_peek(CharStack stack, char* out) {
     return true;
 }
 
+size_t charstack_len(CharStack stack) {
+    return charstack_not_exists(stack) ? 0 : stack->size;
+}
+
 CharList charstack_to_list(CharStack stack) {
     if (charstack_is_empty(stack)) return NULL;
 
@@ -111,7 +116,10 @@ CharList charstack_to_list(CharStack stack) {
 
     CharNode curr = stack->top;
     while (curr != NULL) {
-        charlist_append(new_list, curr->value);
+        if (!charlist_append(new_list, curr->value)) {
+            memmngr_rollback();
+            return NULL;
+        }
 
         curr = curr->next;
     }

@@ -13,7 +13,8 @@ CharStack charstack_new(void);
 bool charstack_is_empty(CharStack stack);
 void charstack_clear(CharStack stack);
 void charstack_free(CharStack stack);
-void charstack_push(CharStack stack, char value);
+
+bool charstack_push(CharStack stack, char value);
 bool charstack_pop(CharStack stack, char* out);
 bool charstack_peek(CharStack stack, char* out);
 
