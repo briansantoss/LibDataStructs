@@ -1,5 +1,4 @@
 #ifndef INTSTACK_H
-
 #define INTSTACK_H
 
 #include <stddef.h>
@@ -22,6 +21,7 @@ bool intstack_peek(IntStack stack, int* out);
 size_t intstack_len(IntStack stack);
 
 IntList intstack_to_list(IntStack stack);
+IntQueue intstack_to_queue(IntStack stack);
 
 // void intstack_print(IntStack stack);
 

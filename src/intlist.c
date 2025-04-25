@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "linkedlist/intlist.h"
 #include "stack/intstack.h"
+#include "queue/intqueue.h"
 
 typedef struct intnode {
     int value;
@@ -15,6 +16,7 @@ struct intlist{
 };
 
 extern bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
+extern void memmngr_rollback(void);
 
 static bool intlist_not_exists(IntList list) {
     return list == NULL;
@@ -264,12 +266,32 @@ IntStack intlist_to_stack(IntList list) {
     
     IntNode curr = list->head;
     while (curr != NULL) {
-        intstack_push(new_stack, curr->value);
+        if (!intstack_push(new_stack, curr->value)) {
+            memmngr_rollback();
+            return NULL;
+        }
         curr = curr->next;
-    }
+    }    
     
-    memmngr_register(new_stack, (void (*)(void*)) intstack_free);
     return new_stack;
+}
+
+IntQueue intlist_to_queue(IntList list) {
+    if (intlist_is_empty(list)) return NULL;
+    
+    IntQueue new_queue = intqueue_new();
+    if (new_queue == NULL) return NULL;
+    
+    IntNode curr = list->head;
+    while (curr != NULL) {
+        if (!intqueue_enqueue(new_queue, curr->value)) {
+            memmngr_rollback();
+            return NULL;
+        }
+        curr = curr->next;
+    }    
+
+    return new_queue;
 }
 
 IntList intlist_from_array(int* arr, size_t size) {
@@ -279,7 +301,10 @@ IntList intlist_from_array(int* arr, size_t size) {
     if (intlist_not_exists(new_list)) return NULL;
     
     for (size_t i = 0; i < size; i++) {
-        intlist_append(new_list, arr[i]);
+        if (!intlist_append(new_list, arr[i])) {
+            memmngr_rollback();
+            return NULL;
+        }
     }
     
     return new_list;
@@ -303,7 +328,10 @@ IntList intlist_copy(IntList list) {
     
     IntNode curr = list->head;
     while (curr != NULL) {
-        intlist_append(copy, curr->value);
+        if (!intlist_append(copy, curr->value)) {
+            memmngr_rollback();
+            return NULL;
+        }
         
         curr = curr->next;
     }
@@ -319,7 +347,10 @@ IntList intlist_map(IntList list, int (*callback_func)(int value)) {
     
     IntNode curr = list->head;
     while (curr != NULL) {
-        intlist_append(new_list, callback_func(curr->value));
+        if (!intlist_append(new_list, callback_func(curr->value))) {
+            memmngr_rollback();
+            return NULL;
+        }
         
         curr = curr->next;
     }
@@ -335,7 +366,12 @@ IntList intlist_filter(IntList list, bool (*predicate_func)(int value)) {
     
     IntNode curr = list->head;
     while (curr != NULL) {
-        if (predicate_func(curr->value)) intlist_append(new_list, curr->value);
+        if (predicate_func(curr->value)) {
+            if (!intlist_append(new_list, curr->value)) {
+                memmngr_rollback();
+                return NULL;
+            }
+        }
         
         curr = curr->next;
     }
@@ -352,8 +388,10 @@ IntList intlist_zip(IntList list1, IntList list2) {
     IntNode curr1 = list1->head;
     IntNode curr2 = list2->head;
     while (curr1 != NULL && curr2 != NULL) {
-        intlist_append(new_list, curr1->value);
-        intlist_append(new_list, curr2->value);
+        if (!intlist_append(new_list, curr1->value) || !intlist_append(new_list, curr2->value)) {
+            memmngr_rollback();
+            return NULL;
+        }
         
         curr1 = curr1->next;
         curr2 = curr2->next;

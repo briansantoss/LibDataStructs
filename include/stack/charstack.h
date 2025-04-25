@@ -21,6 +21,7 @@ bool charstack_peek(CharStack stack, char* out);
 size_t charstack_len(CharStack stack);
 
 CharList charstack_to_list(CharStack stack);
+CharQueue charstack_to_queue(CharStack stack);
 
 // void charstack_print(CharStack stack);
 

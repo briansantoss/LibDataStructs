@@ -102,4 +102,11 @@ bool memmngr_register(void* dstruct, void (*destructor)(void* dstruct)) {
     return true;
 }
 
+void memmngr_rollback(void) {
+    if (memmngr == NULL || memmngr->head == NULL) return;
+
+    memmngr->head->destructor(memmngr->head->dstruct);
+    memmngr->head = memmngr->head->next;
+}
+
 #endif

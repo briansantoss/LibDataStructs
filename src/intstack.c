@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "stack/intstack.h"
 #include "linkedlist/intlist.h"
+#include "queue/intqueue.h"
 
 typedef struct intnode {
     int value;
@@ -14,6 +15,7 @@ struct intstack {
 };
 
 extern bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
+extern void memmngr_rollback(void);
 
 static bool intstack_not_exists(IntStack stack) {
     return stack == NULL;
@@ -126,6 +128,20 @@ IntList intstack_to_list(IntStack stack) {
     return new_list;
 }
 
-size_t intstack_len(IntStack stack) {
-    return intstack_not_exists(stack) ? 0 : stack->size;
+IntQueue intstack_to_queue(IntStack stack) {
+    if (intstack_is_empty(stack)) return NULL;
+    
+    IntQueue new_queue = intqueue_new();
+    if (new_queue == NULL) return NULL;
+    
+    IntNode curr = stack->top;
+    while (curr != NULL) {
+        if (!intqueue_enqueue(new_queue, curr->value)) {
+            memmngr_rollback();
+            return NULL;
+        }
+        curr = curr->next;
+    }    
+
+    return new_queue;
 }

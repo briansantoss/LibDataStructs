@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "stack/charstack.h"
 #include "linkedlist/charlist.h"
+#include "queue/charqueue.h"
 
 typedef struct charnode {
     char value;
@@ -14,6 +15,7 @@ struct charstack {
 };
 
 extern bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
+extern void memmngr_rollback(void);
 
 static bool charstack_not_exists(CharStack stack) {
     return stack == NULL;
@@ -127,6 +129,20 @@ CharList charstack_to_list(CharStack stack) {
     return new_list;
 }
 
-size_t charstack_len(CharStack stack) {
-    return charstack_not_exists(stack) ? 0 : stack->size;
+CharQueue charstack_to_queue(CharStack stack) {
+    if (charstack_is_empty(stack)) return NULL;
+    
+    CharQueue new_queue = charqueue_new();
+    if (new_queue == NULL) return NULL;
+    
+    CharNode curr = stack->top;
+    while (curr != NULL) {
+        if (!charqueue_enqueue(new_queue, curr->value)) {
+            memmngr_rollback();
+            return NULL;
+        }
+        curr = curr->next;
+    }    
+
+    return new_queue;
 }

@@ -38,7 +38,7 @@ CharList charlist_filter(CharList list, bool (*predicate_func)(char value));
 CharList charlist_zip(CharList list1, CharList list2);
 char* charlist_to_string(CharList list);
 CharStack charlist_to_stack(CharList list);
-CharStack charlist_to_queue(CharList list);
+CharQueue charlist_to_queue(CharList list);
 
 void charlist_reverse(CharList list);
 void charlist_foreach(CharList list, char (*callback_func)(char value));

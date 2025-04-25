@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "linkedlist/charlist.h"
 #include "stack/charstack.h"
+#include "queue/charqueue.h"
 
 typedef struct charnode {
     char value;
@@ -15,6 +16,7 @@ struct charlist{
 };
 
 extern bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
+extern void memmngr_rollback(void);
 
 static bool charlist_not_exists(CharList list) {
     return list == NULL;
@@ -272,6 +274,24 @@ CharStack charlist_to_stack(CharList list) {
     return new_stack;
 }
 
+CharQueue charlist_to_queue(CharList list) {
+    if (charlist_is_empty(list)) return NULL;
+    
+    CharQueue new_queue = charqueue_new();
+    if (new_queue == NULL) return NULL;
+    
+    CharNode curr = list->head;
+    while (curr != NULL) {
+        if (!charqueue_enqueue(new_queue, curr->value)) {
+            memmngr_rollback();
+            return NULL;
+        }
+        curr = curr->next;
+    }    
+
+    return new_queue;
+}
+
 CharList charlist_from_string(const char* str, size_t size) {
     if (str == NULL || size == 0) return NULL;
 
@@ -279,7 +299,10 @@ CharList charlist_from_string(const char* str, size_t size) {
     if (charlist_not_exists(new_list)) return NULL;
     
     for (size_t i = 0; i < size; i++) {
-        charlist_append(new_list, str[i]);
+        if (!charlist_append(new_list, str[i])) {
+            memmngr_rollback();
+            return NULL;
+        }
     }
     
     return new_list;
@@ -303,7 +326,10 @@ CharList charlist_copy(CharList list) {
 
     CharNode curr = list->head;
     while (curr != NULL) {
-        charlist_append(copy, curr->value);
+        if (!charlist_append(copy, curr->value)) {
+            memmngr_rollback();
+            return NULL;
+        }
 
         curr = curr->next;
     }
@@ -319,7 +345,10 @@ CharList charlist_map(CharList list, char (*callback_func)(char value)) {
 
     CharNode curr = list->head;
     while (curr != NULL) {
-        charlist_append(new_list, callback_func(curr->value));
+        if (!charlist_append(new_list, callback_func(curr->value))) {
+            memmngr_rollback();
+            return NULL;
+        }
 
         curr = curr->next;
     }
@@ -336,8 +365,10 @@ CharList charlist_zip(CharList list1, CharList list2) {
     CharNode curr1 = list1->head;
     CharNode curr2 = list2->head;
     while (curr1 != NULL && curr2 != NULL) {
-        charlist_append(new_list, curr1->value);
-        charlist_append(new_list, curr2->value);
+        if (!charlist_append(new_list, curr1->value) || !charlist_append(new_list, curr2->value)) {
+            memmngr_rollback();
+            return NULL;
+        }
 
         curr1 = curr1->next;
         curr2 = curr2->next;
@@ -354,7 +385,12 @@ CharList charlist_filter(CharList list, bool (*predicate_func)(char value)) {
 
     CharNode curr = list->head;
     while (curr != NULL) {
-        if (predicate_func(curr->value)) charlist_append(new_list, curr->value);
+        if (predicate_func(curr->value)) {
+            if (!charlist_append(new_list, curr->value)) {
+                memmngr_rollback();
+                return NULL;
+           }
+        }
 
         curr = curr->next;
     }
