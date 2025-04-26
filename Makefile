@@ -32,7 +32,7 @@ $(BINDIR)%: $(SAMPLEDIR)%.c lib
 	@$(CC) $(CFLAGS) $< -L$(LIBDIR) -l$(BASENAME) -o $@
 
 debug:
-	@make DEBUG=1
+	@$(MAKE) DEBUG=1
 
 clean: 
 	@rm -f $(OBJDIR)*
