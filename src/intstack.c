@@ -3,6 +3,8 @@
 #include "stack/intstack.h"
 #include "linkedlist/intlist.h"
 #include "queue/intqueue.h"
+#include "internal/memmngr.h"
+
 
 typedef struct intnode {
     int value;
@@ -13,9 +15,6 @@ struct intstack {
     IntNode top;
     size_t size;
 };
-
-extern bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
-extern void memmngr_rollback(void);
 
 static bool intstack_not_exists(IntStack stack) {
     return stack == NULL;

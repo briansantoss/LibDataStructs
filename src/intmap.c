@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "map/intmap.h"
+#include "internal/memmngr.h"
 
 #define INITIAL_CAPACITY 16
 #define GROWTH_FACTOR 2
@@ -17,9 +18,6 @@ struct intmap {
     size_t size;
     size_t capacity;
 };
-
-extern bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
-extern void memmngr_rollback(void);
 
 static bool intmap_not_exists(IntMap map) {
     return map == NULL;

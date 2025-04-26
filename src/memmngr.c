@@ -1,8 +1,6 @@
-#ifndef MEM_MANAGER_DISABLED
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
+#include "internal/memmngr.h"
 
 typedef struct memnode {
     void* dstruct;
@@ -108,5 +106,3 @@ void memmngr_rollback(void) {
     memmngr->head->destructor(memmngr->head->dstruct);
     memmngr->head = memmngr->head->next;
 }
-
-#endif

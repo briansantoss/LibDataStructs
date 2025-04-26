@@ -2,6 +2,8 @@
 #include "queue/charqueue.h"
 #include "linkedlist/charlist.h"
 #include "stack/charstack.h"
+#include "internal/memmngr.h"
+
 
 typedef struct charnode {
     char value;
@@ -13,9 +15,6 @@ struct charqueue {
     CharNode rear;
     size_t size;
 };
-
-extern bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
-extern void memmngr_rollback(void);
 
 static bool charqueue_not_exists(CharQueue queue) {
     return queue == NULL;

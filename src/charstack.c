@@ -3,6 +3,7 @@
 #include "stack/charstack.h"
 #include "linkedlist/charlist.h"
 #include "queue/charqueue.h"
+#include "internal/memmngr.h"
 
 typedef struct charnode {
     char value;
@@ -13,9 +14,6 @@ struct charstack {
     CharNode top;
     size_t size;
 };
-
-extern bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
-extern void memmngr_rollback(void);
 
 static bool charstack_not_exists(CharStack stack) {
     return stack == NULL;
