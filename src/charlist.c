@@ -1,6 +1,6 @@
+#include "linkedlist/charlist.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "linkedlist/charlist.h"
 #include "stack/charstack.h"
 #include "queue/charqueue.h"
 #include "internal/memmngr.h"

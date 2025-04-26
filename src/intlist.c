@@ -1,6 +1,6 @@
+#include "linkedlist/intlist.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "linkedlist/intlist.h"
 #include "stack/intstack.h"
 #include "queue/intqueue.h"
 #include "internal/memmngr.h"

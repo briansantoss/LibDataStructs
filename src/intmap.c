@@ -1,6 +1,6 @@
+#include "map/intmap.h"
 #include <stdlib.h>
 #include <string.h>
-#include "map/intmap.h"
 #include "internal/memmngr.h"
 
 #define INITIAL_CAPACITY 16

@@ -1,6 +1,6 @@
+#include "internal/memmngr.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "internal/memmngr.h"
 
 typedef struct memnode {
     void* dstruct;

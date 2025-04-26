@@ -20,6 +20,8 @@ OBJS = $(patsubst $(SRCDIR)%.c, $(OBJDIR)%.o, $(SRCS))
 SAMPLES_SRCS = $(wildcard $(SAMPLEDIR)*.c)
 SAMPLES = $(patsubst $(SAMPLEDIR)%.c, $(BINDIR)%, $(SAMPLES_SRCS))
 
+all: lib samples
+
 lib: $(OBJS)
 	@ar rcs $(LIBDIR)lib$(LIB_STATIC) $^
 
@@ -31,8 +33,8 @@ samples: $(SAMPLES)
 $(BINDIR)%: $(SAMPLEDIR)%.c lib
 	@$(CC) $(CFLAGS) $< -L$(LIBDIR) -l$(BASENAME) -o $@
 
-debug:
-	@$(MAKE) DEBUG=1
+debug: samples
+	@$(MAKE) -s DEBUG=1
 
 clean: 
 	@rm -f $(OBJDIR)*

@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include "queue/charqueue.h"
+#include <stdlib.h>
 #include "linkedlist/charlist.h"
 #include "stack/charstack.h"
 #include "internal/memmngr.h"
