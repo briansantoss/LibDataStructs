@@ -224,6 +224,33 @@ bool intmap_contains(IntMap map, const char* key) {
     return false;
 }
 
+char** intmap_keys(IntMap map) {
+    if (intmap_is_empty(map)) return NULL;
+
+    char** keys = (char**) malloc(sizeof (char*) * map->size);
+    if (keys == NULL) return NULL;
+
+    for (size_t i = 0, j = 0; i < map->capacity; i++) {
+        IntMapNode curr = map->buckets[i];
+        while (curr != NULL) {
+            char* key_copy = (char*) malloc(strlen(curr->key) + 1);
+            if (key_copy == NULL) {
+                for (size_t k = 0; k < j; k++) {
+                    free(keys[k]);
+                }
+                free(keys);
+                return NULL;
+            }
+
+            strcpy(key_copy, curr->key);
+            keys[j++] = key_copy;
+
+            curr = curr->next;
+        }
+    }
+    return keys;
+}
+
 size_t intmap_len(IntMap map) {
     return intmap_not_exists(map) ? 0 : map->size;
 }
