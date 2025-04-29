@@ -13,7 +13,7 @@ void intmap_free(IntMap map);
 bool intmap_insert(IntMap map, const char* key, int value);
 bool intmap_get(IntMap map, const char* key, int* out);
 void intmap_remove(IntMap map, const char* key);
-bool intmap_contains(IntMap map, const char* key);
+bool intmap_contains_key(IntMap map, const char* key);
 char** intmap_keys(IntMap map);
 
 size_t intmap_len(IntMap map);

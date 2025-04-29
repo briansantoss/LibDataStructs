@@ -211,7 +211,7 @@ void intmap_remove(IntMap map, const char* key) {
     }
 }
 
-bool intmap_contains(IntMap map, const char* key) {
+bool intmap_contains_key(IntMap map, const char* key) {
     if (intmap_is_empty(map)) return false;
 
     uint32_t index = intmap_get_index(map, key);
