@@ -59,6 +59,5 @@ int main() {
         intstack_clear(st);
     }
     
-    intstack_free(st);
     return 0;
 }
