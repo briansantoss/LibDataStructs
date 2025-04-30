@@ -113,6 +113,12 @@ IntMap intmap_new(void) {
     return new_map;
 }
 
+void intmap_clear(IntMap map) {
+    if (intmap_is_empty(map)) return;
+
+    map->size = 0;
+}
+
 void intmap_free(IntMap map) {
     if (intmap_not_exists(map)) return;
 
@@ -230,6 +236,11 @@ char** intmap_keys(IntMap map) {
     char** keys = (char**) malloc(sizeof (char*) * map->size);
     if (keys == NULL) return NULL;
 
+    if (!memmngr_register(keys, free)) {
+        free(keys);
+        return NULL;
+    }
+
     for (size_t i = 0, j = 0; i < map->capacity; i++) {
         IntMapNode curr = map->buckets[i];
         while (curr != NULL) {
@@ -238,7 +249,7 @@ char** intmap_keys(IntMap map) {
                 for (size_t k = 0; k < j; k++) {
                     free(keys[k]);
                 }
-                free(keys);
+                memmngr_rollback();
                 return NULL;
             }
 
@@ -249,6 +260,27 @@ char** intmap_keys(IntMap map) {
         }
     }
     return keys;
+}
+
+int* intmap_values(IntMap map) {
+    if (intmap_is_empty(map)) return NULL;
+
+    int* values = (int*) malloc(sizeof (int) * map->size);
+    if (values == NULL) return NULL;
+
+    if (!memmngr_register(values, free)) {
+        free(values);
+        return NULL;
+    }
+
+    for (size_t i = 0, j = 0; i < map->capacity; i++) {
+        IntMapNode curr = map->buckets[i];
+        while (curr != NULL) {
+            values[j++] = curr->value;
+            curr = curr->next;
+        }
+    }
+    return values;
 }
 
 size_t intmap_len(IntMap map) {
