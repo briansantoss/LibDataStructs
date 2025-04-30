@@ -23,8 +23,8 @@ static bool intmap_not_exists(IntMap map) {
     return map == NULL;
 }
 
-static bool intmap_is_empty(IntMap map) {
-    return intmap_not_exists(map) || map->capacity == 0;
+bool intmap_is_empty(IntMap map) {
+    return intmap_not_exists(map) || map->size == 0;
 }
 
 static IntMapNode intmap_create_node(char* key, int value) {
