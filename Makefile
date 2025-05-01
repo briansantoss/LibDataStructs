@@ -33,7 +33,7 @@ samples: $(SAMPLES)
 $(BINDIR)%: $(SAMPLEDIR)%.c lib
 	@$(CC) $(CFLAGS) $< -L$(LIBDIR) -l$(BASENAME) -o $@
 
-debug: samples
+debug:
 	@$(MAKE) -s DEBUG=1
 
 clean: 
