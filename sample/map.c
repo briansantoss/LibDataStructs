@@ -22,8 +22,9 @@ int main() {
         printf("\nKey: %s", ages_keys[i]);
     }
     
-    printf("\n\nRemoving the key 'Felipe'...");
+    printf("\n\nRemoving the key 'Felipe' and updating Erika's age to 20...");
     intmap_remove(ages_map, "Felipe");
+    intmap_set(ages_map, "Erika", 20);
 
     ages_keys = intmap_keys(ages_map);
     if (ages_keys == NULL) {

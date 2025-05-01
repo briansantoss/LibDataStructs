@@ -62,6 +62,19 @@ static uint32_t intmap_get_index(IntMap map, const char* key) {
     return intmap_hash(key) % map->capacity;
 }
 
+static IntMapNode intmap_get_node_by_key(IntMap map, const char* key) {
+    if (intmap_is_empty(map)) return NULL;
+
+    uint32_t index = intmap_get_index(map, key);
+    
+    IntMapNode curr = map->buckets[index];
+    while (curr != NULL) {
+        if (strcmp(curr->key, key) == 0) return curr;
+        curr = curr->next;
+    }
+    return NULL;
+}
+
 static bool intmap_resize(IntMap map) {
     size_t old_capacity = map->capacity;
     size_t new_capacity = old_capacity * GROWTH_FACTOR;
@@ -175,19 +188,21 @@ bool intmap_insert(IntMap map, const char* key, int value) {
 }
 
 bool intmap_get(IntMap map, const char* key, int* out) {
-    if (intmap_is_empty(map) || out == NULL) return false;
+    if (out == NULL) return false;
 
-    uint32_t index = intmap_get_index(map, key);
+    IntMapNode target = intmap_get_node_by_key(map, key);
+    if (target == NULL) return false;
 
-    IntMapNode curr = map->buckets[index];
-    while (curr != NULL) {
-        if (strcmp(curr->key, key) == 0) {
-            *out = curr->value;
-            return true;
-        }
-        curr = curr->next;
-    }
-    return false;
+    *out = target->value;
+    return true;
+}
+
+bool intmap_set(IntMap map, const char* key, int new_value) {
+    IntMapNode target = intmap_get_node_by_key(map, key);
+    if (target == NULL) return false;
+
+    target->value = new_value;
+    return true;
 }
 
 void intmap_remove(IntMap map, const char* key) {
@@ -281,6 +296,21 @@ int* intmap_values(IntMap map) {
         }
     }
     return values;
+}
+
+bool intmap_equals(IntMap map1, IntMap map2) {
+    if (intmap_not_exists(map1) || intmap_not_exists(map2)) return false;
+    if (map1->size != map2->size) return false;
+
+    for (size_t i = 0; i < map1->capacity; i++) {
+        IntMapNode curr1 = map1->buckets[i];
+        while (curr1 != NULL) {
+            int value2;
+            if (!intmap_get(map2, curr1->key, &value2) || value2 != curr1->value) return false;
+            curr1 = curr1->next;
+        }
+    }
+    return true;
 }
 
 size_t intmap_len(IntMap map) {
