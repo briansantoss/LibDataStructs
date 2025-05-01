@@ -10,7 +10,7 @@ typedef struct charnode {
     struct charnode* next;
 } *CharNode;
 
-struct charlist{
+struct charlist {
     CharNode head;
     CharNode tail;
     size_t size;
@@ -113,10 +113,7 @@ bool charlist_push_at(CharList list, char value, size_t index) {
     if (new_node == NULL) return false;
 
     CharNode curr = list->head;
-    for (size_t i = 0; i < index - 1; i++) {
-        curr = curr->next;
-    }
-
+    for (size_t i = 0; i < index - 1; i++, curr = curr->next);
     new_node->next = curr->next;
     curr->next = new_node;
 
