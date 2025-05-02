@@ -8,6 +8,7 @@
 typedef struct charnode {
     char value;
     struct charnode* next;
+    struct charnode* prev;
 } *CharNode;
 
 struct charlist {
@@ -28,7 +29,7 @@ static CharNode charlist_create_node(char value) {
     CharNode new_node = (CharNode) malloc(sizeof (struct charnode));
     if (new_node == NULL) return NULL;
 
-    new_node->next = NULL;
+    new_node->prev = new_node->next = NULL;
     new_node->value = value;
     return new_node;
 }
@@ -78,6 +79,7 @@ bool charlist_push(CharList list, char value) {
     if (charlist_is_empty(list)) {
         list->head = list->tail = new_node;
     } else {
+        list->head->prev = new_node;
         new_node->next = list->head;
         list->head = new_node;
     }
@@ -95,6 +97,7 @@ bool charlist_append(CharList list, char value) {
     if (charlist_is_empty(list)) {
         list->head = list->tail = new_node;
     } else {
+        new_node->prev = list->tail;
         list->tail->next = new_node;
         list->tail = new_node;
     }
@@ -113,9 +116,12 @@ bool charlist_push_at(CharList list, char value, size_t index) {
     if (new_node == NULL) return false;
 
     CharNode curr = list->head;
-    for (size_t i = 0; i < index - 1; i++, curr = curr->next);
-    new_node->next = curr->next;
-    curr->next = new_node;
+    for (size_t i = 0; i < index; i++, curr = curr->next);
+
+    new_node->prev = curr->prev;
+    new_node->next = curr;
+    curr->prev->next = new_node;
+    curr->prev = new_node;
 
     list->size++;
     return true;
@@ -165,6 +171,7 @@ void charlist_pop_start(CharList list) {
         list->head = list->tail = NULL;
     } else {
         list->head = list->head->next;
+        list->head->next = NULL;
     }
 
     free(old_head);
@@ -178,14 +185,12 @@ void charlist_pop(CharList list) {
         free(list->head);
         list->head = list->tail = NULL;
     } else {
-        CharNode curr = list->head;
-        while (curr->next != list->tail) {
-            curr = curr->next;
-        }
+        CharNode old_tail = list->tail;
 
-        free(list->tail);
-        curr->next = NULL;
-        list->tail = curr;
+        list->tail = list->tail->next;
+        list->tail->next = NULL;
+
+        free(old_tail);
     }
 
     list->size--;
@@ -205,11 +210,12 @@ void charlist_pop_at(CharList list, size_t index) {
     }
 
     CharNode curr = list->head;
-    for (size_t i = 0; i < index - 1; i++, curr = curr->next);
+    for (size_t i = 0; i < index; i++, curr = curr->next);
 
-    CharNode target = curr->next;
-    curr->next = target->next;
-    free(target);
+    curr->prev->next = curr->next;
+    curr->next->prev = curr->prev;
+
+    free(curr);
 
     list->size--;
 }
@@ -221,20 +227,19 @@ size_t charlist_len(CharList list) {
 void charlist_reverse(CharList list) {
     if (charlist_is_empty(list)) return;
 
-    CharNode prev = NULL;
-    
     CharNode curr = list->head;
     while (curr != NULL) {
         CharNode next = curr->next;
         
-        curr->next = prev;
-        prev = curr;
+        curr->next = curr->prev;
+        curr->prev = next;
         
         curr = next;
     }
     
-    list->tail = list->head;
-    list->head = prev;
+    CharNode head = list->head;
+    list->head = list->tail;
+    list->tail = head;
 }
 
 char* charlist_to_string(CharList list) {
@@ -439,11 +444,10 @@ void charlist_print(CharList list) {
     CharNode curr = list->head;
     while (curr != NULL) {
         printf("%c", curr->value);
-        printf(" -> ");
 
+        if (curr->next != NULL) printf(" -> ");
         curr = curr->next;
     }
-    printf("NULL");
 }
 
 bool charlist_contains(CharList list, char target) {

@@ -8,6 +8,7 @@
 typedef struct intnode {
     int value;
     struct intnode* next;
+    struct intnode* prev;
 } *IntNode;
 
 struct intlist {
@@ -28,7 +29,7 @@ static IntNode intlist_create_node(int value) {
     IntNode new_node = (IntNode) malloc(sizeof (struct intnode));
     if (new_node == NULL) return NULL;
 
-    new_node->next = NULL;
+    new_node->prev = new_node->next = NULL;
     new_node->value = value;
     return new_node;
 }
@@ -78,6 +79,7 @@ bool intlist_push(IntList list, int value) {
     if (intlist_is_empty(list)) {
         list->head = list->tail = new_node;
     } else {
+        list->head->prev = new_node;
         new_node->next = list->head;
         list->head = new_node;
     }
@@ -95,6 +97,7 @@ bool intlist_append(IntList list, int value) {
     if (intlist_is_empty(list)) {
         list->head = list->tail = new_node;
     } else {
+        new_node->prev = list->tail;
         list->tail->next = new_node;
         list->tail = new_node;
     }
@@ -113,9 +116,12 @@ bool intlist_push_at(IntList list, int value, size_t index) {
     if (new_node == NULL) return false;
     
     IntNode curr = list->head;
-    for (size_t i = 0; i < index - 1; i++, curr = curr->next);
-    new_node->next = curr->next;
-    curr->next = new_node;
+    for (size_t i = 0; i < index; i++, curr = curr->next);
+
+    new_node->prev = curr->prev;
+    new_node->next = curr;
+    curr->prev->next = new_node;
+    curr->prev = new_node;
     
     list->size++;
     return true;
@@ -165,6 +171,7 @@ void intlist_pop_start(IntList list) {
         list->head = list->tail = NULL;
     } else {
         list->head = list->head->next;
+        list->head->prev = NULL;
     }
 
     free(old_head);
@@ -178,14 +185,12 @@ void intlist_pop(IntList list) {
         free(list->head);
         list->head = list->tail = NULL;
     } else {
-        IntNode curr = list->head;
-        while (curr->next != list->tail) {
-            curr = curr->next;
-        }
+        IntNode old_tail = list->tail;
 
-        free(list->tail);
-        curr->next = NULL;
-        list->tail = curr;
+        list->tail = list->tail->prev;
+        list->tail->next = NULL;
+
+        free(old_tail);
     }
     
     list->size--;
@@ -205,11 +210,12 @@ void intlist_pop_at(IntList list, size_t index) {
     }
     
     IntNode curr = list->head;
-    for (size_t i = 0; i < index - 1; i++, curr = curr->next);
+    for (size_t i = 0; i < index; i++, curr = curr->next);
     
-    IntNode target = curr->next;
-    curr->next = target->next;
-    free(target);
+    curr->prev->next = curr->next;
+    curr->next->prev = curr->prev;
+
+    free(curr);
     
     list->size--;
 }
@@ -221,20 +227,19 @@ size_t intlist_len(IntList list) {
 void intlist_reverse(IntList list) {
     if (intlist_is_empty(list)) return;
     
-    IntNode prev = NULL;
-    
     IntNode curr = list->head;
     while (curr != NULL) {
         IntNode next = curr->next;
         
-        curr->next = prev;
-        prev = curr;
+        curr->next = curr->prev;
+        curr->prev = next;
         
         curr = next;
     }
     
-    list->tail = list->head;
-    list->head = prev;
+    IntNode head = list->head;
+    list->head = list->tail;
+    list->tail = head;
 }
 
 int* intlist_to_array(IntList list) {
@@ -449,11 +454,10 @@ void intlist_print(IntList list) {
     IntNode curr = list->head;
     while (curr != NULL) {
         printf("%d", curr->value);
-        printf(" -> ");
-
+        
+        if (curr->next != NULL) printf(" -> ");
         curr = curr->next;
     }
-    printf("NULL");
 }
 
 bool intlist_contains(IntList list, int target) {

@@ -8,6 +8,7 @@ typedef struct strnode {
     char* value;
     size_t size;
     struct strnode* next;
+    struct strnode* prev;
 } *StrNode;
 
 struct strlist {
@@ -37,7 +38,7 @@ size) {
 
     strncpy(new_node->value, value, size);
     new_node->value[size] = '\0';
-    new_node->next = NULL;
+    new_node->prev =new_node->next = NULL;
     new_node->size = size;
     return new_node;
 }
@@ -94,6 +95,7 @@ bool strlist_push(StrList list, const char* value, size_t str_size) {
     if (strlist_is_empty(list)) {
         list->head = list->tail = new_node;
     } else {
+        list->head->prev = new_node;
         new_node->next = list->head;
         list->head = new_node;
     }
@@ -111,6 +113,7 @@ bool strlist_append(StrList list, const char* value, size_t str_size) {
     if (strlist_is_empty(list)) {
         list->head = list->tail = new_node;
     } else {
+        new_node->prev = list->tail;
         list->tail->next = new_node;
         list->tail = new_node;
     }
@@ -129,9 +132,12 @@ bool strlist_push_at(StrList list, const char* value, size_t str_size,  size_t i
     if (new_node == NULL) return false;
 
     StrNode curr = list->head;
-    for (size_t i = 0; i < index - 1; i++, curr = curr->next);
-    new_node->next = curr->next;
-    curr->next = new_node;
+    for (size_t i = 0; i < index; i++, curr = curr->next);
+
+    new_node->prev = curr->prev;
+    new_node->next = curr;
+    curr->prev->next = new_node;
+    curr->prev = new_node;
 
     list->size++;
     return true;
@@ -179,6 +185,7 @@ void strlist_pop_start(StrList list) {
         list->head = list->tail = NULL;
     } else {
         list->head = list->head->next;
+        list->head->prev = NULL;
     }
 
     strlist_free_node(old_head);
@@ -192,14 +199,12 @@ void strlist_pop(StrList list) {
         strlist_free_node(list->head);
         list->head = list->tail = NULL;
     } else {
-        StrNode curr = list->head;
-        while (curr->next != list->tail) {
-            curr = curr->next;
-        }
+        StrNode old_tail = list->tail;
 
-        strlist_free_node(list->tail);
-        curr->next = NULL;
-        list->tail = curr;
+        list->tail = list->tail->prev;
+        list->tail->next = NULL;
+
+        strlist_free_node(old_tail);
     }
 
     list->size--;
@@ -219,11 +224,12 @@ void strlist_pop_at(StrList list, size_t index) {
     }
 
     StrNode curr = list->head;
-    for (size_t i = 0; i < index - 1; i++, curr = curr->next);
+    for (size_t i = 0; i < index; i++, curr = curr->next);
 
-    StrNode target = curr->next;
-    curr->next = target->next;
-    strlist_free_node(target);
+    curr->prev->next = curr->next;
+    curr->next->prev = curr->prev;
+
+    strlist_free_node(curr);
 
     list->size--;
 }
@@ -235,20 +241,19 @@ size_t strlist_len(StrList list) {
 void strlist_reverse(StrList list) {
     if (strlist_is_empty(list)) return;
 
-    StrNode prev = NULL;
-    
     StrNode curr = list->head;
     while (curr != NULL) {
         StrNode next = curr->next;
         
-        curr->next = prev;
-        prev = curr;
+        curr->next = curr->prev;
+        curr->prev = next;
         
         curr = next;
     }
     
-    list->tail = list->head;
-    list->head = prev;
+    StrNode head = list->head;
+    list->head = list->tail;
+    list->tail = head;
 }
 
 StrList strlist_copy(StrList list) {
@@ -335,11 +340,10 @@ void strlist_print(StrList list) {
     StrNode curr = list->head;
     while (curr != NULL) {
         printf("%s", curr->value);
-        printf(" -> ");
 
+        if (curr->next != NULL) printf(" -> ");
         curr = curr->next;
     }
-    printf("NULL");
 }
 
 bool strlist_equals(StrList list1, StrList list2) {
