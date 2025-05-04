@@ -20,7 +20,7 @@ bool intmap_is_empty(IntMap map);
 char** intmap_keys(IntMap map);
 int* intmap_values(IntMap map);
 bool intmap_has_key(IntMap map, const char* key);
-
+bool intmap_equals(IntMap map1, IntMap map2);
 uint32_t intmap_len(IntMap map);
 
 #endif

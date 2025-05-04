@@ -4,7 +4,7 @@
 #include "internal/memmngr.h"
 
 #define INITIAL_CAPACITY 16
-#define MAX_CAPACITY 1u << 31
+#define MAX_CAPACITY (1u << 31)
 #define GROWTH_FACTOR 2
 #define THRESHOLD_LOAD_FACTOR 0.75
 
@@ -79,37 +79,33 @@ static IntMapNode intmap_get_node_by_key(IntMap map, const char* key) {
     return NULL;
 }
 
-static bool intmap_resize(IntMap map) {
-    uint32_t old_capacity = map->capacity;
-    uint32_t new_capacity = old_capacity * GROWTH_FACTOR;
+static void intmap_transfer(IntMap map, IntMapNode* new_table, uint32_t new_capacity) {
+    for (uint32_t i = 0; i < map->capacity; i++) {
+        IntMapNode curr = map->table[i];
+        while (curr != NULL) {
+            IntMapNode next = curr->next;
 
+            uint32_t index = intmap_get_index(curr->hash, new_capacity);
+            curr->next = new_table[index];
+            new_table[index] = curr; 
+
+            curr = next;
+        }
+    }
+}
+
+static bool intmap_resize(IntMap map) {
+    uint32_t new_capacity = map->capacity * GROWTH_FACTOR;
     if (new_capacity > MAX_CAPACITY) return false;
 
     IntMapNode* new_table = (IntMapNode*) calloc(new_capacity, sizeof (IntMapNode));
     if (new_table == NULL) return false;
 
-    IntMapNode* old_table = map->table;
-    uint32_t old_size = map->size;
-
+    intmap_transfer(map, new_table, new_capacity);
+    
+    free(map->table);
     map->table = new_table;
     map->capacity = new_capacity;
-    map->size = 0;
-    
-    for (uint32_t i = 0; i < old_capacity; i++) {
-        IntMapNode curr = old_table[i];
-        while (curr != NULL) {
-            if (!intmap_insert(map, curr->key, curr->value)) {
-                free(new_table);
-                map->table = old_table;
-                map->capacity = old_capacity;
-                map->size = old_size;
-                return false;
-            }
-            curr = curr->next;
-        }
-    }
-
-    free(old_table);
     return true;
 }
 
@@ -175,7 +171,7 @@ bool intmap_insert(IntMap map, const char* key, int value) {
     new_node->next = map->table[index];
     map->table[index] = new_node;
 
-    if (++map->size > THRESHOLD_LOAD_FACTOR * map->capacity) {
+    if (++map->size > (uint32_t) (THRESHOLD_LOAD_FACTOR * map->capacity)) {
         return intmap_resize(map);
     }
     return true;
