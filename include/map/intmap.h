@@ -19,8 +19,8 @@ void intmap_remove(IntMap map, const char* key);
 bool intmap_is_empty(IntMap map);
 char** intmap_keys(IntMap map);
 int* intmap_values(IntMap map);
-bool intmap_contains_key(IntMap map, const char* key);
+bool intmap_has_key(IntMap map, const char* key);
 
-size_t intmap_len(IntMap map);
+uint32_t intmap_len(IntMap map);
 
 #endif

@@ -14,7 +14,7 @@ int main() {
 
     int num2_arr[] = {5, 6, 4}; // Represents the number 465
     IntList num2 = intlist_from_array(num2_arr, 3); 
-    if (num1 == NULL) {
+    if (num2 == NULL) {
         fprintf(stderr, "Error: cannot create the second number list.");
         return 1;
     }
