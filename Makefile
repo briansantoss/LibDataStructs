@@ -14,11 +14,14 @@ OBJDIR = obj/
 BINDIR = bin/
 LIBDIR = lib/
 SAMPLEDIR = sample/
+TESTDIR = test/
 
 SRCS = $(wildcard $(SRCDIR)*.c)
 OBJS = $(patsubst $(SRCDIR)%.c, $(OBJDIR)%.o, $(SRCS))
 SAMPLES_SRCS = $(wildcard $(SAMPLEDIR)*.c)
 SAMPLES = $(patsubst $(SAMPLEDIR)%.c, $(BINDIR)%, $(SAMPLES_SRCS))
+TESTS_SRCS = $(wildcard $(TESTDIR)*.c)
+TESTS = $(patsubst $(TESTDIR)%.c,$(BINDIR)%, $(TESTS_SRCS))
 
 all: lib samples
 
@@ -31,6 +34,15 @@ $(OBJDIR)%.o: $(SRCDIR)%.c
 samples: $(SAMPLES)
 
 $(BINDIR)%: $(SAMPLEDIR)%.c lib
+	@$(CC) $(CFLAGS) $< -L$(LIBDIR) -l$(BASENAME) -o $@
+
+run_tests : tests
+	@echo "Running tests..."
+	@for test in $(TESTS); do echo "Running $$test:"; ./$$test; done
+
+tests: $(TESTS)
+
+$(BINDIR)%: $(TESTDIR)%.c lib
 	@$(CC) $(CFLAGS) $< -L$(LIBDIR) -l$(BASENAME) -o $@
 
 debug:
