@@ -30,16 +30,15 @@ size) {
     StrNode new_node = (StrNode) malloc(sizeof (struct strnode));
     if (new_node == NULL) return NULL;
 
-    new_node->value = (char*) malloc(size + 1);
-    if (new_node->value == NULL) {
+    char* value_copy = (char*) malloc(size + 1);
+    if (value_copy == NULL) {
         free(new_node);
         return NULL;
     }
+    strncpy(value_copy, value, size);
+    value_copy[size] = '\0';
 
-    strncpy(new_node->value, value, size);
-    new_node->value[size] = '\0';
-    new_node->prev =new_node->next = NULL;
-    new_node->size = size;
+    *new_node = (struct strnode) {.value = value_copy, .prev = NULL, .next = NULL};
     return new_node;
 }
 
@@ -59,9 +58,7 @@ StrList strlist_new(void) {
         return NULL;
     }
 
-    new_list->head = new_list->tail = NULL;
-    new_list->size = 0;
-
+    *new_list = (struct strlist) {.head = NULL, .tail = NULL, .size = 0};
     return new_list;
 }
 
@@ -235,7 +232,7 @@ void strlist_pop_at(StrList list, size_t index) {
 }
 
 size_t strlist_len(StrList list) {
-    return strlist_is_empty(list) ? 0 : list->size;
+    return strlist_not_exists(list) ? 0 : list->size;
 }
 
 void strlist_reverse(StrList list) {

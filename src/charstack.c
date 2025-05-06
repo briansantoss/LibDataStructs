@@ -26,9 +26,7 @@ static CharNode charstack_create_node(int value) {
     CharNode new_node = (CharNode) malloc(sizeof (struct charnode));
     if (new_node == NULL) return NULL;
 
-    new_node->next = NULL;
-    new_node->value = value;
-
+    *new_node = (struct charnode) {.value = value, .next = NULL};
     return new_node;
 }
 
@@ -41,9 +39,7 @@ CharStack charstack_new(void) {
         return NULL;
     }
 
-    new_stack->size = 0;
-    new_stack->top = NULL;
-
+    *new_stack = (struct charstack) {.top = NULL, .size = 0};
     return new_stack;
 }
 

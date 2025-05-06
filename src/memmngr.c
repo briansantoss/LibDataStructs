@@ -19,9 +19,7 @@ static MemNode memmngr_create_node(void* dstruct, void (*destructor)(void* dstru
     MemNode new_node = (MemNode) malloc(sizeof (struct memnode));
     if (new_node == NULL) return NULL;
 
-    new_node->dstruct = dstruct;
-    new_node->destructor = destructor;
-    new_node->next = NULL;
+    *new_node = (struct memnode) {.dstruct = dstruct, .destructor = destructor, .next = NULL};
     return new_node;
 }
 
@@ -55,8 +53,7 @@ __attribute__((constructor)) void memmngr_new(void) {
     printf("Memory manager succesfully created.\n");
     #endif
 
-    new_memmngr->head = NULL;
-    new_memmngr->size = 0;
+    *new_memmngr = (struct memmngr){.head = NULL, .size = 0};
     memmngr = new_memmngr;
 
     atexit(memmngr_destructor);

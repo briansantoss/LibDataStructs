@@ -28,8 +28,7 @@ static CharNode charqueue_create_node(char value) {
     CharNode new_node = (CharNode) malloc(sizeof (struct charnode));
     if (new_node == NULL) return NULL;
 
-    new_node->next = NULL;
-    new_node->value = value;
+    *new_node = (struct charnode) {.value = value, .next = NULL};
     return new_node;
 }
 
@@ -45,6 +44,7 @@ CharQueue charqueue_new(void) {
     new_queue->front = new_queue->rear = NULL;
     new_queue->size = 0;
 
+    *new_queue = (struct charqueue) {.front = NULL, .rear = NULL, .size = 0};
     return new_queue;
 }
 
@@ -115,7 +115,7 @@ bool charqueue_peek(CharQueue queue, char* out) {
 }
 
 size_t charqueue_len(CharQueue queue) {
-    return charqueue_is_empty(queue) ? 0 : queue->size;
+    return charqueue_not_exists(queue) ? 0 : queue->size;
 }
 
 CharList charqueue_to_list(CharQueue queue) {

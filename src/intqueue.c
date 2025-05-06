@@ -28,8 +28,7 @@ static IntNode intqueue_create_node(int value) {
     IntNode new_node = (IntNode) malloc(sizeof (struct intnode));
     if (new_node == NULL) return NULL;
 
-    new_node->next = NULL;
-    new_node->value = value;
+    *new_node = (struct intnode) {.value = value, .next = NULL};
     return new_node;
 }
 
@@ -42,9 +41,7 @@ IntQueue intqueue_new(void) {
         return NULL;
     }
 
-    new_queue->front = new_queue->rear = NULL;
-    new_queue->size = 0;
-
+    *new_queue = (struct intqueue) {.front = NULL, .rear = NULL, .size = 0};
     return new_queue;
 }
 
@@ -115,7 +112,7 @@ bool intqueue_peek(IntQueue queue, int* out) {
 }
 
 size_t intqueue_len(IntQueue queue) {
-    return intqueue_is_empty(queue) ? 0 : queue->size;
+    return intqueue_not_exists(queue) ? 0 : queue->size;
 }
 
 IntList intqueue_to_list(IntQueue queue) {

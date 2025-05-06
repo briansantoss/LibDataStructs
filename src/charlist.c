@@ -29,8 +29,7 @@ static CharNode charlist_create_node(char value) {
     CharNode new_node = (CharNode) malloc(sizeof (struct charnode));
     if (new_node == NULL) return NULL;
 
-    new_node->prev = new_node->next = NULL;
-    new_node->value = value;
+    *new_node = (struct charnode) {.value = value, .prev = NULL, .next = NULL};
     return new_node;
 }
 
@@ -43,9 +42,7 @@ CharList charlist_new(void) {
         return NULL;
     }
     
-    new_list->head = new_list->tail = NULL;
-    new_list->size = 0;
-
+    *new_list = (struct charlist) {.head = NULL, .tail = NULL, .size = 0};
     return new_list;
 }
 
@@ -221,7 +218,7 @@ void charlist_pop_at(CharList list, size_t index) {
 }
 
 size_t charlist_len(CharList list) {
-    return charlist_is_empty(list) ? 0 : list->size;
+    return charlist_not_exists(list) ? 0 : list->size;
 }
 
 void charlist_reverse(CharList list) {

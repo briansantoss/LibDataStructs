@@ -28,8 +28,7 @@ static IntNode intstack_create_node(int value) {
     IntNode new_node = (IntNode) malloc(sizeof (struct intnode));
     if (new_node == NULL) return NULL;
 
-    new_node->next = NULL;
-    new_node->value = value;
+    *new_node = (struct intnode) {.value = value, .next = NULL};
     return new_node;
 }
 
@@ -42,9 +41,7 @@ IntStack intstack_new(void) {
         return NULL;
     }
 
-    new_stack->size = 0;
-    new_stack->top = NULL;
-
+    *new_stack = (struct intstack) {.top = NULL, .size = 0};
     return new_stack;
 }
 

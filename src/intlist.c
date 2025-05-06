@@ -29,8 +29,7 @@ static IntNode intlist_create_node(int value) {
     IntNode new_node = (IntNode) malloc(sizeof (struct intnode));
     if (new_node == NULL) return NULL;
 
-    new_node->prev = new_node->next = NULL;
-    new_node->value = value;
+    *new_node = (struct intnode) {.value = value, .prev = NULL, .next = NULL};
     return new_node;
 }
 
@@ -43,9 +42,7 @@ IntList intlist_new(void) {
         return NULL;
     }
 
-    new_list->head = new_list->tail = NULL;
-    new_list->size = 0;
-
+    *new_list = (struct intlist) {.head = NULL, .tail = NULL, .size = 0};
     return new_list;
 }
 
@@ -221,7 +218,7 @@ void intlist_pop_at(IntList list, size_t index) {
 }
 
 size_t intlist_len(IntList list) {
-    return intlist_is_empty(list) ? 0 : list->size;
+    return intlist_not_exists(list) ? 0 : list->size;
 }
 
 void intlist_reverse(IntList list) {
