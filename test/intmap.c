@@ -8,6 +8,7 @@ void test_create() {
     IntMap map = intmap_new();
     assert(map != NULL);
     assert(intmap_is_empty(map));
+    assert(intmap_len(map) == 0);
 }
 
 void test_insert_and_has_key() {
@@ -15,6 +16,9 @@ void test_insert_and_has_key() {
     assert(intmap_insert(map, "a", 1));
     assert(intmap_has_key(map, "a"));
     assert(!intmap_insert(map, "a", 2));
+
+    intmap_remove(map, "a");
+    assert(!intmap_has_key(map, "a"));
 }
 
 void test_insert_and_get() {
@@ -36,6 +40,13 @@ void test_set() {
     int value = 0;
     assert(intmap_get(map, "x", &value));
     assert(value == 10);
+
+    assert(!intmap_has_key(map, "y"));
+    intmap_set(map, "y", 20);
+    assert(intmap_has_key(map, "y"));
+
+    assert(intmap_get(map, "y", &value));
+    assert(value = 20);
 }
 
 void test_remove() {
@@ -82,7 +93,6 @@ void test_keys_and_values() {
     for (int i = 0; i < 2; i++) {
         if (strcmp(keys[i], "one") == 0 && values[i] == 1) found[0] = 1;
         if (strcmp(keys[i], "two") == 0 && values[i] == 2) found[1] = 1;
-        free(keys[i]);
     }
     assert(found[0] && found[1]);
 }
