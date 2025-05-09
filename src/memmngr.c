@@ -17,17 +17,17 @@ static MemMngr memmngr = NULL;
 
 static MemNode memmngr_create_node(void* dstruct, void (*destructor)(void* dstruct)) {
     MemNode new_node = (MemNode) malloc(sizeof (struct memnode));
-    if (new_node == NULL) return NULL;
+    if (!new_node) return NULL;
 
     *new_node = (struct memnode) {.dstruct = dstruct, .destructor = destructor, .next = NULL};
     return new_node;
 }
 
 static void memmngr_destructor() {
-    if (memmngr == NULL) return;
+    if (!memmngr) return;
 
     MemNode curr = memmngr->head;
-    while (curr != NULL) {
+    while (curr) {
         #ifdef DEBUG
         printf("\nDestroying strucuture %p\n", curr->dstruct);
         #endif
@@ -44,7 +44,7 @@ static void memmngr_destructor() {
 
 __attribute__((constructor)) void memmngr_new(void) {
     MemMngr new_memmngr = (MemMngr) malloc(sizeof (struct memmngr));
-    if (new_memmngr == NULL) {
+    if (!new_memmngr) {
         fprintf(stderr, "Error: dstruct internal memory manager cannot be initialized");
         exit(EXIT_FAILURE);
     }
@@ -61,7 +61,7 @@ __attribute__((constructor)) void memmngr_new(void) {
 
 #ifdef DEBUG
 void memmngr_print() {
-    if (memmngr == NULL) {
+    if (!memmngr) {
         printf("NULL");
         return;
     }
@@ -69,22 +69,21 @@ void memmngr_print() {
     printf("\nStructures registered: ");
     
     MemNode curr = memmngr->head;;
-    while (curr != NULL) {
+    while (curr) {
         printf("%p", curr->dstruct);
-        printf(" -> ");
-
+        
+        if (curr->next) printf(" -> ");
         curr = curr->next;
     }
-    printf("NULL\n");
-    printf("Structures allocated: %lld\n", memmngr->size);
+    printf("\nStructures allocated: %lld\n", memmngr->size);
 }
 #endif
 
 bool memmngr_register(void* dstruct, void (*destructor)(void* dstruct)) {
-    if (memmngr == NULL) return false;
+    if (!memmngr) return false;
 
     MemNode new_node = memmngr_create_node(dstruct, destructor);
-    if (new_node == NULL) return false;
+    if (!new_node) return false;
 
     new_node->next =  memmngr->head;
     memmngr->head = new_node;
@@ -98,7 +97,7 @@ bool memmngr_register(void* dstruct, void (*destructor)(void* dstruct)) {
 }
 
 void memmngr_rollback(void) {
-    if (memmngr == NULL || memmngr->head == NULL) return;
+    if (!memmngr|| !memmngr->head) return;
 
     memmngr->head->destructor(memmngr->head->dstruct);
     memmngr->head = memmngr->head->next;

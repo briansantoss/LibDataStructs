@@ -22,7 +22,7 @@ struct intmap {
 };
 
 static bool intmap_not_exists(IntMap map) {
-    return map == NULL;
+    return !map;
 }
 
 bool intmap_is_empty(IntMap map) {
@@ -31,10 +31,10 @@ bool intmap_is_empty(IntMap map) {
 
 static IntMapNode intmap_create_node(uint32_t hash, const char* key, int value) {
     IntMapNode new_node = (IntMapNode) malloc(sizeof (struct intmapnode));
-    if (new_node == NULL) return NULL;
+    if (!new_node) return NULL;
 
     char* key_copy = (char*) malloc(strlen(key) + 1);
-    if (key_copy == NULL) {
+    if (!key_copy) {
         free(new_node);
         return NULL;
     }
@@ -68,11 +68,11 @@ static uint32_t intmap_get_index(uint32_t hash, uint32_t capacity) {
 }
 
 static IntMapNode intmap_get_node_by_key(IntMap map, const char* key) {
-    if (intmap_is_empty(map) || key == NULL) return NULL;
+    if (intmap_is_empty(map) || !key) return NULL;
 
     uint32_t hash = intmap_hash(key);
     IntMapNode curr = map->table[intmap_get_index(hash, map->capacity)];
-    while (curr != NULL) {
+    while (curr) {
         if (hash == curr->hash && strcmp(curr->key, key) == 0) return curr;
         curr = curr->next;
     }
@@ -82,7 +82,7 @@ static IntMapNode intmap_get_node_by_key(IntMap map, const char* key) {
 static void intmap_transfer(IntMap map, IntMapNode* new_table, uint32_t new_capacity) {
     for (uint32_t i = 0; i < map->capacity; i++) {
         IntMapNode curr = map->table[i];
-        while (curr != NULL) {
+        while (curr) {
             IntMapNode next = curr->next;
 
             uint32_t index = intmap_get_index(curr->hash, new_capacity);
@@ -99,7 +99,7 @@ static bool intmap_resize(IntMap map) {
     if (new_capacity > MAX_CAPACITY) return false;
 
     IntMapNode* new_table = (IntMapNode*) calloc(new_capacity, sizeof (IntMapNode));
-    if (new_table == NULL) return false;
+    if (!new_table) return false;
 
     intmap_transfer(map, new_table, new_capacity);
     
@@ -114,7 +114,7 @@ IntMap intmap_new(void) {
     if (intmap_not_exists(new_map)) return NULL;
 
     IntMapNode* table = (IntMapNode*) calloc(INITIAL_CAPACITY, sizeof (IntMapNode));
-    if (table == NULL) {
+    if (!table) {
         free(new_map);
         return NULL;
     }
@@ -132,6 +132,17 @@ IntMap intmap_new(void) {
 void intmap_clear(IntMap map) {
     if (intmap_is_empty(map)) return;
 
+    for(uint32_t i = 0; i < map->capacity; i++) {
+        IntMapNode curr = map->table[i];
+        while (curr) {
+            IntMapNode next = curr->next;
+
+            intmap_free_node(curr);
+
+            curr = next;
+        }
+        map->table[i] = NULL;
+    }
     map->size = 0;
 }
 
@@ -140,7 +151,7 @@ void intmap_free(IntMap map) {
 
     for (uint32_t i = 0; i < map->capacity; i++) {
         IntMapNode curr = map->table[i];
-        while (curr != NULL) {
+        while (curr) {
             IntMapNode next = curr->next;
 
             intmap_free_node(curr);
@@ -154,34 +165,38 @@ void intmap_free(IntMap map) {
 }
 
 bool intmap_insert(IntMap map, const char* key, int value) {
-    if (intmap_not_exists(map) || key == NULL) return false;
+    if (intmap_not_exists(map) || !key) return false;
     
     uint32_t hash = intmap_hash(key);
     uint32_t index = intmap_get_index(hash, map->capacity);
 
     IntMapNode curr = map->table[index];
-    while (curr != NULL) { 
+    while (curr) { 
         if (hash == curr->hash && strcmp(curr->key, key) == 0) return false;
         curr = curr->next;
     }
     
     IntMapNode new_node = intmap_create_node(hash, key, value);
-    if (new_node == NULL) return false;
+    if (!new_node) return false;
+
+    if (++map->size > (uint32_t) (THRESHOLD_LOAD_FACTOR * map->capacity)) {
+        if (!intmap_resize(map)) {
+            intmap_free_node(new_node);
+            return false;
+        }
+        index = intmap_get_index(hash, map->capacity);
+    }
 
     new_node->next = map->table[index];
     map->table[index] = new_node;
-
-    if (++map->size > (uint32_t) (THRESHOLD_LOAD_FACTOR * map->capacity)) {
-        return intmap_resize(map);
-    }
     return true;
 }
 
 bool intmap_get(IntMap map, const char* key, int* out) {
-    if (out == NULL) return false;
+    if (!out) return false;
 
     IntMapNode target = intmap_get_node_by_key(map, key);
-    if (target == NULL) return false;
+    if (!target) return false;
 
     *out = target->value;
     return true;
@@ -189,23 +204,23 @@ bool intmap_get(IntMap map, const char* key, int* out) {
 
 bool intmap_set(IntMap map, const char* key, int new_value) {
     IntMapNode target = intmap_get_node_by_key(map, key);
-    if (target == NULL) return intmap_insert(map, key, new_value);
+    if (!target) return intmap_insert(map, key, new_value);
 
     target->value = new_value;
     return true;
 }
 
 void intmap_remove(IntMap map, const char* key) {
-    if (intmap_is_empty(map) || key == NULL) return;
+    if (intmap_is_empty(map) || !key) return;
 
     uint32_t hash = intmap_hash(key);
     uint32_t index = intmap_get_index(hash, map->capacity);
 
     IntMapNode prev = NULL;
     IntMapNode curr = map->table[index];
-    while (curr != NULL) {
+    while (curr) {
         if (hash == curr->hash && strcmp(curr->key, key) == 0) {
-            if (prev == NULL) {
+            if (!prev) {
                 map->table[index] = curr->next;
             } else {
                 prev->next = curr->next;
@@ -221,14 +236,14 @@ void intmap_remove(IntMap map, const char* key) {
 }
 
 bool intmap_has_key(IntMap map, const char* key) {
-    return intmap_get_node_by_key(map, key) != NULL;
+    return intmap_get_node_by_key(map, key);
 }
 
 char** intmap_keys(IntMap map) {
     if (intmap_is_empty(map)) return NULL;
 
     char** keys = (char**) malloc(sizeof (char*) * map->size);
-    if (keys == NULL) return NULL;
+    if (!keys) return NULL;
 
     if (!memmngr_register(keys, free)) {
         free(keys);
@@ -237,9 +252,9 @@ char** intmap_keys(IntMap map) {
 
     for (uint32_t i = 0, j = 0; i < map->capacity; i++) {
         IntMapNode curr = map->table[i];
-        while (curr != NULL) {
+        while (curr) {
             char* key_copy = (char*) malloc(strlen(curr->key) + 1);
-            if (key_copy == NULL) {
+            if (!key_copy) {
                 for (uint32_t k = 0; k < j; k++) {
                     free(keys[k]);
                 }
@@ -260,7 +275,7 @@ int* intmap_values(IntMap map) {
     if (intmap_is_empty(map)) return NULL;
 
     int* values = (int*) malloc(sizeof (int) * map->size);
-    if (values == NULL) return NULL;
+    if (!values) return NULL;
 
     if (!memmngr_register(values, free)) {
         free(values);
@@ -269,7 +284,7 @@ int* intmap_values(IntMap map) {
 
     for (uint32_t i = 0, j = 0; i < map->capacity; i++) {
         IntMapNode curr = map->table[i];
-        while (curr != NULL) {
+        while (curr) {
             values[j++] = curr->value;
             curr = curr->next;
         }
@@ -283,7 +298,7 @@ bool intmap_equals(IntMap map1, IntMap map2) {
 
     for (uint32_t i = 0; i < map1->capacity; i++) {
         IntMapNode curr1 = map1->table[i];
-        while (curr1 != NULL) {
+        while (curr1) {
             int value2;
             if (!intmap_get(map2, curr1->key, &value2) || value2 != curr1->value) return false;
             curr1 = curr1->next;
@@ -292,6 +307,6 @@ bool intmap_equals(IntMap map1, IntMap map2) {
     return true;
 }
 
-uint32_t intmap_len(IntMap map) {
+uint32_t intmap_size(IntMap map) {
     return intmap_not_exists(map) ? 0 : map->size;
 }

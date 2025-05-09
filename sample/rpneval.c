@@ -5,8 +5,8 @@
 
 int main() {
     IntStack st = intstack_new();
-    if (st == NULL) {
-        perror("Error: cannot create the stack.");
+    if (!st) {
+        fprintf(stderr, "Error: cannot create the stack.");
         return 1;
     }
 

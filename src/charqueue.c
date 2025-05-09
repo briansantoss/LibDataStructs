@@ -16,17 +16,17 @@ struct charqueue {
     size_t size;
 };
 
-static bool charqueue_not_exists(CharQueue queue) {
-    return queue == NULL;
+static bool charqueue_not_exists(const CharQueue queue) {
+    return !queue;
 }
 
-bool charqueue_is_empty(CharQueue queue) {
-    return charqueue_not_exists(queue) || queue->front == NULL;
+bool charqueue_is_empty(const CharQueue queue) {
+    return charqueue_not_exists(queue) || !queue->front;
 }
 
 static CharNode charqueue_create_node(char value) {
     CharNode new_node = (CharNode) malloc(sizeof (struct charnode));
-    if (new_node == NULL) return NULL;
+    if (!new_node) return NULL;
 
     *new_node = (struct charnode) {.value = value, .next = NULL};
     return new_node;
@@ -41,9 +41,6 @@ CharQueue charqueue_new(void) {
         return NULL;
     }
 
-    new_queue->front = new_queue->rear = NULL;
-    new_queue->size = 0;
-
     *new_queue = (struct charqueue) {.front = NULL, .rear = NULL, .size = 0};
     return new_queue;
 }
@@ -52,7 +49,7 @@ void charqueue_clear(CharQueue queue) {
     if (charqueue_is_empty(queue)) return;
 
     CharNode curr = queue->front;
-    while (curr != NULL) {
+    while (curr) {
         CharNode next = curr->next;
 
         free(curr);
@@ -73,7 +70,7 @@ bool charqueue_enqueue(CharQueue queue, char value) {
     if (charqueue_not_exists(queue)) return false;
 
     CharNode new_node = charqueue_create_node(value);
-    if (new_node == NULL) return false;
+    if (!new_node) return false;
 
     if (charqueue_is_empty(queue)) {
         queue->front = queue->rear = new_node;
@@ -92,7 +89,7 @@ bool charqueue_dequeue(CharQueue queue, char* out) {
 
     CharNode old_front = queue->front;
 
-    if (out != NULL) *out = old_front->value;
+    if (out) *out = old_front->value;
 
     if (queue->size == 1) {
         queue->front = queue->rear = NULL;
@@ -108,25 +105,25 @@ bool charqueue_dequeue(CharQueue queue, char* out) {
 }
 
 bool charqueue_peek(CharQueue queue, char* out) {
-    if (charqueue_is_empty(queue) || out == NULL) return false;
+    if (charqueue_is_empty(queue) || !out) return false;
 
     *out = queue->front->value;
     return true;
 }
 
-size_t charqueue_len(CharQueue queue) {
+size_t charqueue_size(const CharQueue queue) {
     return charqueue_not_exists(queue) ? 0 : queue->size;
 }
 
-CharList charqueue_to_list(CharQueue queue) {
+CharList charqueue_to_list(const CharQueue queue) {
     if (charqueue_is_empty(queue)) return NULL;
 
     CharList new_list = charlist_new();
-    if (new_list == NULL) return NULL;
+    if (!new_list) return NULL;
 
     CharNode curr = queue->front;
-    while (curr != NULL) {
-        if (!charlist_append(new_list, curr->value)) {
+    while (curr) {
+        if (!charlist_push(new_list, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
@@ -136,14 +133,14 @@ CharList charqueue_to_list(CharQueue queue) {
     return new_list;
 }
 
-CharStack charqueue_to_stack(CharQueue queue) {
+CharStack charqueue_to_stack(const CharQueue queue) {
     if (charqueue_is_empty(queue)) return NULL;
 
     CharStack new_stack = charstack_new();
-    if (new_stack == NULL) return NULL;
+    if (!new_stack) return NULL;
 
     CharNode curr = queue->front;
-    while (curr != NULL) {
+    while (curr) {
         if (!charstack_push(new_stack, curr->value)) {
             memmngr_rollback();
             return NULL;

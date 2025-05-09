@@ -6,4 +6,4 @@
 bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
 void memmngr_rollback(void);
 
-#endif
+#endif // MEM_MNGR_H

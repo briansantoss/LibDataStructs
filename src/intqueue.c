@@ -16,17 +16,17 @@ struct intqueue {
     size_t size;
 };
 
-static bool intqueue_not_exists(IntQueue queue) {
-    return queue == NULL;
+static bool intqueue_not_exists(const IntQueue queue) {
+    return !queue;
 }
 
-bool intqueue_is_empty(IntQueue queue) {
-    return intqueue_not_exists(queue) || queue->front == NULL;
+bool intqueue_is_empty(const IntQueue queue) {
+    return intqueue_not_exists(queue) || !queue->front;
 }
 
 static IntNode intqueue_create_node(int value) {
     IntNode new_node = (IntNode) malloc(sizeof (struct intnode));
-    if (new_node == NULL) return NULL;
+    if (!new_node) return NULL;
 
     *new_node = (struct intnode) {.value = value, .next = NULL};
     return new_node;
@@ -49,7 +49,7 @@ void intqueue_clear(IntQueue queue) {
     if (intqueue_is_empty(queue)) return;
 
     IntNode curr = queue->front;
-    while (curr != NULL) {
+    while (curr) {
         IntNode next = curr->next;
 
         free(curr);
@@ -70,7 +70,7 @@ bool intqueue_enqueue(IntQueue queue, int value) {
     if (intqueue_not_exists(queue)) return false;
 
     IntNode new_node = intqueue_create_node(value);
-    if (new_node == NULL) return false;
+    if (!new_node) return false;
 
     if (intqueue_is_empty(queue)) {
         queue->front = queue->rear = new_node;
@@ -89,7 +89,7 @@ bool intqueue_dequeue(IntQueue queue, int* out) {
 
     IntNode old_front = queue->front;
 
-    if (out != NULL) *out = old_front->value;
+    if (out) *out = old_front->value;
 
     if (queue->size == 1) {
         queue->front = queue->rear = NULL;
@@ -104,26 +104,26 @@ bool intqueue_dequeue(IntQueue queue, int* out) {
     return true;
 }
 
-bool intqueue_peek(IntQueue queue, int* out) {
-    if (intqueue_is_empty(queue) || out == NULL) return false;
+bool intqueue_peek(const IntQueue queue, int* out) {
+    if (intqueue_is_empty(queue) || !out) return false;
 
     *out = queue->front->value;
     return true;
 }
 
-size_t intqueue_len(IntQueue queue) {
+size_t intqueue_size(IntQueue queue) {
     return intqueue_not_exists(queue) ? 0 : queue->size;
 }
 
-IntList intqueue_to_list(IntQueue queue) {
+IntList intqueue_to_list(const IntQueue queue) {
     if (intqueue_is_empty(queue)) return NULL;
 
     IntList new_list = intlist_new();
-    if (new_list == NULL) return NULL;
+    if (!new_list) return NULL;
 
     IntNode curr = queue->front;
-    while (curr != NULL) {
-        if (!intlist_append(new_list, curr->value)) {
+    while (curr) {
+        if (!intlist_push(new_list, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
@@ -133,14 +133,14 @@ IntList intqueue_to_list(IntQueue queue) {
     return new_list;
 }
 
-IntStack intqueue_to_stack(IntQueue queue) {
+IntStack intqueue_to_stack(const IntQueue queue) {
     if (intqueue_is_empty(queue)) return NULL;
 
     IntStack new_stack = intstack_new();
-    if (new_stack == NULL) return NULL;
+    if (!new_stack) return NULL;
 
     IntNode curr = queue->front;
-    while (curr != NULL) {
+    while (curr) {
         if (!intstack_push(new_stack, curr->value)) {
             memmngr_rollback();
             return NULL;

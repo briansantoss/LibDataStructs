@@ -4,53 +4,57 @@
 #include <string.h>
 #include <stdlib.h>
 
-void test_create() {
+void test_new() {
     IntMap map = intmap_new();
-    assert(map != NULL);
+    assert(map);
+
     assert(intmap_is_empty(map));
-    assert(intmap_len(map) == 0);
+    assert(intmap_size(map) == 0);
+
+    assert(intmap_is_empty(NULL));
+    assert(intmap_size(NULL) == 0);
 }
 
-void test_insert_and_has_key() {
+void test_insert() {
     IntMap map = intmap_new();
-    assert(intmap_insert(map, "a", 1));
-    assert(intmap_has_key(map, "a"));
+    assert(map);
+
+    int value;
+    assert(intmap_insert(map, "a", 1) && intmap_has_key(map, "a"));
+    assert(intmap_size(map) == 1);
+    assert(intmap_get(map, "a", &value) && value == 1);
     assert(!intmap_insert(map, "a", 2));
+    
+    assert(intmap_insert(map, "key", 55) && intmap_has_key(map, "key"));
+    assert(intmap_size(map) == 2);
+    assert(intmap_get(map, "key", &value) && value == 55);
+    assert(!intmap_insert(map, "key", 2));
 
-    intmap_remove(map, "a");
-    assert(!intmap_has_key(map, "a"));
-}
-
-void test_insert_and_get() {
-    IntMap map = intmap_new();
-    intmap_insert(map, "key", 42);
-
-    int value = 0;
-    assert(intmap_get(map, "key", &value));
-    assert(value == 42);
-
-    assert(!intmap_get(map, "not_found", &value));
+    assert(!intmap_insert(NULL, "null", 10));
+    assert(!intmap_insert(NULL, NULL, 45));
+    assert(!intmap_insert(map, NULL, 108) && !intmap_has_key(map, NULL) && intmap_size(map) == 2);
 }
 
 void test_set() {
     IntMap map = intmap_new();
-    intmap_set(map, "x", 5);
-    intmap_set(map, "x", 10); 
-
-    int value = 0;
-    assert(intmap_get(map, "x", &value));
-    assert(value == 10);
-
-    assert(!intmap_has_key(map, "y"));
-    intmap_set(map, "y", 20);
-    assert(intmap_has_key(map, "y"));
-
-    assert(intmap_get(map, "y", &value));
-    assert(value = 20);
+    assert(map);
+    
+    int value;
+    assert(intmap_set(map, "new", 5) && intmap_has_key(map, "new"));
+    assert(intmap_size(map) == 1);
+    assert(intmap_get(map, "new", &value) && value == 5);
+    
+    assert(intmap_set(map, "new", 10)); 
+    assert(intmap_get(map, "new", &value) && value == 10);
+    assert(intmap_size(map) == 1);
+    
+    assert(!intmap_set(NULL, "a", 56));
+    assert(!intmap_set(map, NULL, 190) && intmap_size(map) == 1);
 }
 
 void test_remove() {
     IntMap map = intmap_new();
+    assert(map);
     intmap_insert(map, "delete", 123);
     assert(intmap_has_key(map, "delete"));
     intmap_remove(map, "delete");
@@ -59,35 +63,38 @@ void test_remove() {
 
 void test_clear() {
     IntMap map = intmap_new();
+    assert(map);
     intmap_insert(map, "a", 1);
     intmap_insert(map, "b", 2);
     intmap_clear(map);
     assert(intmap_is_empty(map));
-    assert(intmap_len(map) == 0);
+    assert(intmap_size(map) == 0);
 }
 
 void test_equals() {
     IntMap m1 = intmap_new();
     IntMap m2 = intmap_new();
-
+    assert(m1 && m2);
+    
     intmap_insert(m1, "x", 10);
     intmap_insert(m2, "x", 10);
     assert(intmap_equals(m1, m2));
-
+    
     intmap_set(m2, "x", 20);
     assert(!intmap_equals(m1, m2));
 }
 
 void test_keys_and_values() {
     IntMap map = intmap_new();
+    assert(map);
     intmap_insert(map, "one", 1);
     intmap_insert(map, "two", 2);
-
+    
     char** keys = intmap_keys(map);
     int* values = intmap_values(map);
 
     assert(keys && values);
-    assert(intmap_len(map) == 2);
+    assert(intmap_size(map) == 2);
 
     int found[2] = {0};
     for (int i = 0; i < 2; i++) {
@@ -114,13 +121,12 @@ void test_resize() {
         assert(value == i);
     }
 
-    assert(intmap_len(map) == 1000);
+    assert(intmap_size(map) == 1000);
 }
 
 int main() {
-    test_create();
-    test_insert_and_has_key();
-    test_insert_and_get();
+    test_new();
+    test_insert();
     test_set();
     test_remove();
     test_clear();

@@ -10,19 +10,17 @@ typedef struct charqueue* CharQueue;
 typedef struct charstack* CharStack;
 
 CharStack charstack_new(void);
-bool charstack_is_empty(CharStack stack);
+bool charstack_is_empty(const CharStack stack);
 void charstack_clear(CharStack stack);
 void charstack_free(CharStack stack);
 
 bool charstack_push(CharStack stack, char value);
 bool charstack_pop(CharStack stack, char* out);
-bool charstack_peek(CharStack stack, char* out);
+bool charstack_peek(const CharStack stack, char* out);
 
-size_t charstack_len(CharStack stack);
+size_t charstack_size(const CharStack stack);
 
-CharList charstack_to_list(CharStack stack);
-CharQueue charstack_to_queue(CharStack stack);
+CharList charstack_to_list(const CharStack stack);
+CharQueue charstack_to_queue(const CharStack stack);
 
-// void charstack_print(CharStack stack);
-
-#endif
+#endif // CHARSTACK_H

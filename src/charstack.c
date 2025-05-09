@@ -14,17 +14,17 @@ struct charstack {
     size_t size;
 };
 
-static bool charstack_not_exists(CharStack stack) {
-    return stack == NULL;
+static bool charstack_not_exists(const CharStack stack) {
+    return !stack;
 }
 
-bool charstack_is_empty(CharStack stack) {
-    return charstack_not_exists(stack) || stack->top == NULL;
+bool charstack_is_empty(const CharStack stack) {
+    return charstack_not_exists(stack) || !stack->top;
 }
 
 static CharNode charstack_create_node(int value) {
     CharNode new_node = (CharNode) malloc(sizeof (struct charnode));
-    if (new_node == NULL) return NULL;
+    if (!new_node) return NULL;
 
     *new_node = (struct charnode) {.value = value, .next = NULL};
     return new_node;
@@ -47,7 +47,7 @@ void charstack_clear(CharStack stack) {
     if (charstack_is_empty(stack)) return;
 
     CharNode curr = stack->top;
-    while (curr != NULL) {
+    while (curr) {
         CharNode next = curr->next;
 
         free(curr);
@@ -67,7 +67,7 @@ bool charstack_push(CharStack stack, char value) {
     if (charstack_not_exists(stack)) return false;
 
     CharNode new_node = charstack_create_node(value);
-    if (new_node == NULL) return false;
+    if (!new_node) return false;
 
     new_node->next = stack->top;
     stack->top = new_node;
@@ -81,7 +81,7 @@ bool charstack_pop(CharStack stack, char* out) {
 
     CharNode old_top = stack->top;
     
-    if (out != NULL) *out = old_top->value;
+    if (out) *out = old_top->value;
 
     stack->top = old_top->next;
     free(old_top);
@@ -91,27 +91,26 @@ bool charstack_pop(CharStack stack, char* out) {
     return true;
 }
 
-bool charstack_peek(CharStack stack, char* out) {
-    if (charstack_is_empty(stack) || out == NULL) return false;
+bool charstack_peek(const CharStack stack, char* out) {
+    if (charstack_is_empty(stack) || !out) return false;
 
     *out = stack->top->value;
-    
     return true;
 }
 
-size_t charstack_len(CharStack stack) {
+size_t charstack_size(const CharStack stack) {
     return charstack_not_exists(stack) ? 0 : stack->size;
 }
 
-CharList charstack_to_list(CharStack stack) {
+CharList charstack_to_list(const CharStack stack) {
     if (charstack_is_empty(stack)) return NULL;
 
     CharList new_list = charlist_new();
-    if (new_list == NULL) return NULL;
+    if (!new_list) return NULL;
 
     CharNode curr = stack->top;
-    while (curr != NULL) {
-        if (!charlist_append(new_list, curr->value)) {
+    while (curr) {
+        if (!charlist_push(new_list, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
@@ -122,14 +121,14 @@ CharList charstack_to_list(CharStack stack) {
     return new_list;
 }
 
-CharQueue charstack_to_queue(CharStack stack) {
+CharQueue charstack_to_queue(const CharStack stack) {
     if (charstack_is_empty(stack)) return NULL;
     
     CharQueue new_queue = charqueue_new();
-    if (new_queue == NULL) return NULL;
+    if (!new_queue) return NULL;
     
     CharNode curr = stack->top;
-    while (curr != NULL) {
+    while (curr) {
         if (!charqueue_enqueue(new_queue, curr->value)) {
             memmngr_rollback();
             return NULL;

@@ -17,21 +17,21 @@ struct strlist {
     size_t size;
 };
 
-static bool strlist_not_exists(StrList list) {
-    return list == NULL;
+static bool strlist_not_exists(const StrList list) {
+    return !list;
 }
 
-bool strlist_is_empty(StrList list) {
-    return strlist_not_exists(list) || list->head == NULL;
+bool strlist_is_empty(const StrList list) {
+    return strlist_not_exists(list) || !list->head;
 }
 
 static StrNode strlist_create_node(const char* value, size_t
 size) {
     StrNode new_node = (StrNode) malloc(sizeof (struct strnode));
-    if (new_node == NULL) return NULL;
+    if (!new_node) return NULL;
 
     char* value_copy = (char*) malloc(size + 1);
-    if (value_copy == NULL) {
+    if (!value_copy) {
         free(new_node);
         return NULL;
     }
@@ -43,8 +43,6 @@ size) {
 }
 
 static void strlist_free_node(StrNode node) {
-    if (node == NULL) return;
-    
     free(node->value);
     free(node);
 }
@@ -66,7 +64,7 @@ void strlist_clear(StrList list) {
     if (strlist_is_empty(list)) return;
 
     StrNode curr = list->head;
-    while (curr != NULL) {
+    while (curr) {
         StrNode next = curr->next;
 
         strlist_free_node(curr);
@@ -83,11 +81,11 @@ void strlist_free(StrList list) {
     free(list);
 }
 
-bool strlist_push(StrList list, const char* value, size_t str_size) {
-    if (strlist_not_exists(list) || value == NULL || str_size == 0) return false;
+bool strlist_push_front(StrList list, const char* value, size_t str_size) {
+    if (strlist_not_exists(list) || !value || str_size == 0) return false;
 
     StrNode new_node = strlist_create_node(value, str_size);
-    if (new_node == NULL) return false;
+    if (!new_node) return false;
 
     if (strlist_is_empty(list)) {
         list->head = list->tail = new_node;
@@ -101,11 +99,11 @@ bool strlist_push(StrList list, const char* value, size_t str_size) {
     return true;
 }
 
-bool strlist_append(StrList list, const char* value, size_t str_size) {
-    if (strlist_not_exists(list) || value == NULL || str_size == 0) return false;
+bool strlist_push(StrList list, const char* value, size_t str_size) {
+    if (strlist_not_exists(list) || !value || str_size == 0) return false;
     
     StrNode new_node = strlist_create_node(value, str_size);
-    if (new_node == NULL) return false;
+    if (!new_node) return false;
     
     if (strlist_is_empty(list)) {
         list->head = list->tail = new_node;
@@ -120,13 +118,13 @@ bool strlist_append(StrList list, const char* value, size_t str_size) {
 }
 
 bool strlist_push_at(StrList list, const char* value, size_t str_size,  size_t index) {
-    if (strlist_not_exists(list) || value == NULL  || str_size == 0 || index > list->size) return false;
+    if (strlist_not_exists(list) || !value || str_size == 0 || index > list->size) return false;
 
-    if (index == 0) return strlist_push(list, value, str_size);
-    if (index == list->size) return strlist_append(list, value, str_size);
+    if (index == 0) return strlist_push_front(list, value, str_size);
+    if (index == list->size) return strlist_push(list, value, str_size);
 
     StrNode new_node = strlist_create_node(value, str_size);
-    if (new_node == NULL) return false;
+    if (!new_node) return false;
 
     StrNode curr = list->head;
     for (size_t i = 0; i < index; i++, curr = curr->next);
@@ -149,24 +147,24 @@ char* strlist_get_at(StrList list, size_t index) {
     return curr->value;
 }
 
-int strlist_index(StrList list, const char* target) {
-    if (strlist_is_empty(list) || target == NULL) return -1;
+int strlist_index(const StrList list, const char* target) {
+    if (strlist_is_empty(list) || !target) return -1;
 
     StrNode curr = list->head;
-    for (size_t i = 0; curr != NULL; i++, curr = curr->next) {
+    for (size_t i = 0; curr; i++, curr = curr->next) {
         if (strcmp(curr->value, target) == 0) return i;
     }
     
     return -1;
 }
 
-size_t strlist_count(StrList list, const char* target) {
-    if (strlist_is_empty(list) || target == NULL) return 0;
+size_t strlist_count(const StrList list, const char* target) {
+    if (strlist_is_empty(list) || !target) return 0;
 
     size_t freq = 0;
 
     StrNode curr = list->head;
-    while (curr != NULL) {
+    while (curr) {
         if (strcmp(curr->value, target) == 0) freq++;
         curr = curr->next;
     }
@@ -174,7 +172,7 @@ size_t strlist_count(StrList list, const char* target) {
     return freq;
 }
 
-void strlist_pop_start(StrList list) {
+void strlist_pop_front(StrList list) {
     if (strlist_is_empty(list)) return;
 
     StrNode old_head = list->head;
@@ -211,7 +209,7 @@ void strlist_pop_at(StrList list, size_t index) {
     if (strlist_is_empty(list) || index >= list->size) return;
 
     if (index == 0) {
-        strlist_pop_start(list);
+        strlist_pop_front(list);
         return;
     }
 
@@ -231,7 +229,7 @@ void strlist_pop_at(StrList list, size_t index) {
     list->size--;
 }
 
-size_t strlist_len(StrList list) {
+size_t strlist_size(const StrList list) {
     return strlist_not_exists(list) ? 0 : list->size;
 }
 
@@ -239,7 +237,7 @@ void strlist_reverse(StrList list) {
     if (strlist_is_empty(list)) return;
 
     StrNode curr = list->head;
-    while (curr != NULL) {
+    while (curr) {
         StrNode next = curr->next;
         
         curr->next = curr->prev;
@@ -253,15 +251,15 @@ void strlist_reverse(StrList list) {
     list->tail = head;
 }
 
-StrList strlist_copy(StrList list) {
+StrList strlist_copy(const StrList list) {
     if (strlist_is_empty(list)) return NULL;
 
     StrList copy = strlist_new();
     if (strlist_not_exists(copy)) return NULL;
 
     StrNode curr = list->head;
-    while (curr != NULL) {
-        if (!strlist_append(copy, curr->value, curr->size)) {
+    while (curr) {
+        if (!strlist_push(copy, curr->value, curr->size)) {
             memmngr_rollback();
             return NULL;
         }
@@ -272,7 +270,7 @@ StrList strlist_copy(StrList list) {
     return copy;
 }
 
-StrList strlist_zip(StrList list1, StrList list2) {
+StrList strlist_zip(const StrList list1, const StrList list2) {
     if (strlist_is_empty(list1) || strlist_is_empty(list2)) return NULL;
 
     StrList new_list = strlist_new();
@@ -280,8 +278,8 @@ StrList strlist_zip(StrList list1, StrList list2) {
     
     StrNode curr1 = list1->head;
     StrNode curr2 = list2->head;
-    while (curr1 != NULL && curr2 != NULL) {
-        if (!strlist_append(new_list, curr1->value, curr1->size) || !strlist_append(new_list, curr2->value, curr2->size)) {
+    while (curr1 && curr2) {
+        if (!strlist_push(new_list, curr1->value, curr1->size) || !strlist_push(new_list, curr2->value, curr2->size)) {
             memmngr_rollback();
             return NULL;
         }
@@ -293,11 +291,11 @@ StrList strlist_zip(StrList list1, StrList list2) {
     return new_list;
 }
 
-bool strlist_all(StrList list, bool (*predicate_func)(const char* value)) {
-    if (strlist_is_empty(list)) return true;
+bool strlist_all(const StrList list, bool (*predicate_func)(const char* value)) {
+    if (strlist_is_empty(list) || !predicate_func) return true;
 
     StrNode curr = list->head;
-    while (curr != NULL) {
+    while (curr) {
         if(!predicate_func(curr->value)) return false;
         curr = curr->next;
     }
@@ -305,11 +303,11 @@ bool strlist_all(StrList list, bool (*predicate_func)(const char* value)) {
     return true;
 }
 
-bool strlist_any(StrList list, bool (*predicate_func)(const char* value)) {
-    if (strlist_is_empty(list)) return false;
+bool strlist_any(const StrList list, bool (*predicate_func)(const char* value)) {
+    if (strlist_is_empty(list) || !predicate_func) return false;
 
     StrNode curr = list->head;
-    while (curr != NULL) {
+    while (curr) {
         if(predicate_func(curr->value)) return true;
         curr = curr->next;
     }
@@ -317,40 +315,40 @@ bool strlist_any(StrList list, bool (*predicate_func)(const char* value)) {
     return false;
 }
 
-bool strlist_contains(StrList list, const char* target) {
-    if (strlist_is_empty(list) || target == NULL) return false;
+bool strlist_contains(const StrList list, const char* target) {
+    if (strlist_is_empty(list) || !target) return false;
 
     StrNode curr = list->head;
-    while (curr != NULL) {
+    while (curr) {
         if (strcmp(curr->value, target) == 0) return true;
         curr = curr->next;
     }
     return false;
 }
 
-void strlist_print(StrList list) {
+void strlist_print(const StrList list) {
     if (strlist_is_empty(list)) {
         printf("NULL");
         return;
     }
 
     StrNode curr = list->head;
-    while (curr != NULL) {
+    while (curr) {
         printf("%s", curr->value);
 
-        if (curr->next != NULL) printf(" -> ");
+        if (curr->next) printf(" -> ");
         curr = curr->next;
     }
 }
 
-bool strlist_equals(StrList list1, StrList list2) {
+bool strlist_equals(const StrList list1, const StrList list2) {
     if (strlist_not_exists(list1) || strlist_not_exists(list2)) return false;
 
     if (list1->size != list2->size) return false;
 
     StrNode curr1 = list1->head;
     StrNode curr2 = list2->head;
-    while (curr1 != NULL && curr2 != NULL ) {
+    while (curr1 && curr2) {
         if (strcmp(curr1->value, curr2->value) != 0) return false;
        
         curr1 = curr1->next;

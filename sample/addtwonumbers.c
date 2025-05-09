@@ -7,20 +7,20 @@
 int main() {
     int num1_arr[] = {2, 4, 3}; // Represents the number 342
     IntList num1 = intlist_from_array(num1_arr, 3); 
-    if (num1 == NULL) {
+    if (!num1) {
         fprintf(stderr, "Error: cannot create the first number list.");
         return 1;
     }
 
     int num2_arr[] = {5, 6, 4}; // Represents the number 465
     IntList num2 = intlist_from_array(num2_arr, 3); 
-    if (num2 == NULL) {
+    if (!num2) {
         fprintf(stderr, "Error: cannot create the second number list.");
         return 1;
     }
     
     IntList sum = intlist_new();
-    if (num1 == NULL) {
+    if (!sum) {
         fprintf(stderr, "Error: cannot create the sum list.");
         return 1;
     }
@@ -50,7 +50,7 @@ int main() {
         carry = total / 10;
         total %= 10;
 
-        if (!intlist_append(sum, total)) {
+        if (!intlist_push(sum, total)) {
             fprintf(stderr, "Error: cannot add the new element.\n");
             return 1;
         }
