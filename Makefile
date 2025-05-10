@@ -23,32 +23,46 @@ SAMPLES = $(patsubst $(SAMPLEDIR)%.c, $(BINDIR)%, $(SAMPLES_SRCS))
 TESTS_SRCS = $(wildcard $(TESTDIR)*.c)
 TESTS = $(patsubst $(TESTDIR)%.c,$(BINDIR)%, $(TESTS_SRCS))
 
+.PHONY: all lib samples tests run_tests debug clean
+
 all: lib samples
 
-lib: $(OBJS)
+lib: $(OBJS) | $(LIBDIR)
+	@echo "Creating static library..."
 	@ar rcs $(LIBDIR)lib$(LIB_STATIC) $^
 
-$(OBJDIR)%.o: $(SRCDIR)%.c 
+	@ar rcs $(LIBDIR)lib$(LIB_STATIC) $^
+
+$(OBJDIR)%.o: $(SRCDIR)%.c | $(OBJDIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 samples: $(SAMPLES)
 
-$(BINDIR)%: $(SAMPLEDIR)%.c lib
+$(BINDIR)%: $(SAMPLEDIR)%.c lib | $(BINDIR)
 	@$(CC) $(CFLAGS) $< -L$(LIBDIR) -l$(BASENAME) -o $@
 
 run_tests : tests
+	@echo "========================"
 	@echo "Running tests..."
 	@for test in $(TESTS); do echo "Running $$test:"; ./$$test; done
+	@echo -e "\n========================"
 
 tests: $(TESTS)
 
-$(BINDIR)%: $(TESTDIR)%.c lib
+$(BINDIR)%: $(TESTDIR)%.c lib | $(BINDIR)
 	@$(CC) $(CFLAGS) $< -L$(LIBDIR) -l$(BASENAME) -o $@
+
+$(OBJDIR):
+	@mkdir -p $@
+
+$(BINDIR):
+	@mkdir -p $@
+
+$(LIBDIR):
+	@mkdir -p $@
 
 debug:
 	@$(MAKE) -s DEBUG=1
 
 clean: 
-	@rm -f $(OBJDIR)*
-	@rm -f $(BINDIR)*
-	@rm -f $(LIBDIR)*
+	@rm -f $(OBJDIR)*  $(BINDIR)* $(LIBDIR)*
