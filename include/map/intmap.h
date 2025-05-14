@@ -5,6 +5,12 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+typedef struct keyvaluepair {
+    char* key;
+    int value;
+} KeyValuePair;
+
+typedef struct intmapiter* IntMapIter;
 typedef struct intmap* IntMap;
 
 IntMap intmap_new(void);
@@ -22,5 +28,8 @@ int* intmap_values(const IntMap map);
 bool intmap_has_key(const IntMap map, const char* key);
 bool intmap_equals(const IntMap map1, const IntMap map2);
 uint32_t intmap_size(const IntMap map);
+
+IntMapIter intmap_iter_new(const IntMap map);
+bool intmap_iter_next(const IntMapIter iter, KeyValuePair* out);
 
 #endif // INTMAP_H
