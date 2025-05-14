@@ -174,6 +174,40 @@ TEST(resize) {
     ASSERT_TRUE(intmap_size(map) == 1000);
 }
 
+TEST(next) {
+    IntMap map = intmap_new();
+    ASSERT_TRUE(map);
+    
+    ASSERT_TRUE(intmap_is_empty(map));
+    ASSERT_FALSE(intmap_iter_new(map))
+
+    ASSERT_TRUE(intmap_insert(map, "A", 65));
+    ASSERT_TRUE(intmap_insert(map, "B", 980));
+    ASSERT_TRUE(intmap_insert(map, "C", 90));
+    
+    IntMapIter iter = intmap_iter_new(map);
+    ASSERT_TRUE(iter);
+    
+    char* expected_keys = "ABC";
+    int expected_values[] = {65, 980, 90};
+    bool found[3] = {false, false, false};
+    
+    KeyValuePair pair;
+    size_t index;
+    
+    for (int i = 0; i < 3; i++) {
+        ASSERT_TRUE(intmap_iter_next(iter, &pair));
+        index = strcspn(expected_keys, pair.key);
+        ASSERT_TRUE(index != strlen(expected_keys));
+        ASSERT_TRUE(!found[index]);
+        found[index] = true;
+        ASSERT_TRUE(pair.value == expected_values[index]);
+    }
+    
+    ASSERT_FALSE(intmap_iter_next(iter, &pair));
+    ASSERT_FALSE(intmap_iter_new(NULL));
+}
+
 int main() {
     TestCase tests[] = {
         {"new", test_new},
@@ -184,6 +218,7 @@ int main() {
         {"equals", test_equals},
         {"keys and values", test_keys_and_values},
         {"resize", test_resize},
+        {"next", test_next},
     };
 
     TestSuite suite = {.name = "IntMap", .tests = tests, .tests_num = sizeof (tests) / sizeof (tests[0])};
