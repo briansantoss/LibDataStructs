@@ -30,5 +30,6 @@ uint32_t intmap_size(const IntMap map);
 
 IntMapIter intmap_iter_new(const IntMap map);
 bool intmap_iter_next(IntMapIter iter, KeyValuePair* out);
+void intmap_iter_reset(IntMapIter iter);
 
 #endif // INTMAP_H
