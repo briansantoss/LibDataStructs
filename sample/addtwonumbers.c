@@ -2,7 +2,16 @@
 #include <stdbool.h>
 #include "linkedlist/intlist.h"
 
-/* The following program solves a classic problem called "Add Two Numbers", a good illustration of using linked lists for numerical manipulation, especially when dealing with numbers that might exceed the capacity of standard integer types. Here, two non-empty linked lists are given, each representing a non-negative integer with its digits stored in reverse order. For instance, the number 342 would be represented as a linked list with nodes containing 2 -> 4 -> 3. */
+/** 
+ * @file addtwonumbers.c
+ * @brief Sums two linked lists representing numbers
+ * 
+ * The following program solves a classic problem called "Add Two Numbers".
+ * A good illustration of using linked lists for numerical manipulation, 
+ * especially when dealing with numbers that might exceed the capacity of standard integer types. 
+ * Two non-empty linked lists * are given, each representing a non-negative integer with its digits stored in reverse order. 
+ * For instance, the number 342 would be * represented as a linked list with nodes containing 2 -> 4 -> 3. 
+ */
 
 int main() {
     int num1_arr[] = {2, 4, 3}; // Represents the number 342
@@ -24,11 +33,12 @@ int main() {
         fprintf(stderr, "Error: cannot create the sum list.");
         return 1;
     }
-    
+
     bool status1, status2;
-    int digit1 = 0,  digit2 = 0, carry = 0; // Current digtis from the lists
+    int digit1 = 0,  digit2 = 0, carry = 0; // Current digits from the lists
     size_t i = 0;
     while (true) {
+        digit1 = digit2 = 0;
         // Check if we really get an element from the sources lists 
         status1 = intlist_get_at(num1, i, &digit1);
         status2 = intlist_get_at(num2, i, &digit2);
@@ -36,20 +46,20 @@ int main() {
         if (!status1 && !status2 && carry == 0) {
             break; // Exit loop if both lists are exhausted and no carry
         }
-
+        
         // Set digit to 0 if already reach its end
         if (!status1) {
             digit1 = 0;
         }
-
+        
         if (!status2) {
             digit2 = 0;
         }
-
+        
         int total = digit1 + digit2 + carry;
         carry = total / 10;
         total %= 10;
-
+        
         if (!intlist_push(sum, total)) {
             fprintf(stderr, "Error: cannot add the new element.\n");
             return 1;
