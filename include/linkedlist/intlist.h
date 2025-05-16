@@ -23,7 +23,9 @@ void intlist_pop(IntList list);
 
 bool intlist_is_empty(const IntList list);
 size_t intlist_size(const IntList list);
+bool intlist_front(const IntList list, int* out);
 bool intlist_get_at(const IntList list, size_t index, int* out);
+bool intlist_back(const IntList list, int* out);
 int intlist_index(const IntList list, int target);
 size_t intlist_count(const IntList list, int target);
 bool intlist_contains(const IntList list, int target);

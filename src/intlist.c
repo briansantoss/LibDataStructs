@@ -25,17 +25,60 @@ bool intlist_is_empty(const IntList list) {
     return intlist_not_exists(list) || !list->head;
 }
 
-static IntNode intlist_create_node(int value) {
+static IntNode intlist_create_node(int value, IntNode prev, IntNode next) {
     IntNode new_node = (IntNode) malloc(sizeof (struct intnode));
     if (!new_node) return NULL;
 
-    *new_node = (struct intnode) {.value = value, .prev = NULL, .next = NULL};
+    *new_node = (struct intnode) {.value = value, .prev = prev, .next = next};
     return new_node;
 }
 
 static void intlist_free(IntList list) {
     intlist_clear(list);
     free(list);
+}
+
+static IntNode intlist_node_at(const IntList list, size_t index) {
+    IntNode node;
+    if (index < list->size / 2) {
+        node = list->head;
+        while (index--) node = node->next;
+    } else {
+        node = list->tail;
+        index = list->size - index - 1;
+        while (index--) node = node->prev;
+    }
+    return node;
+}
+
+static bool intlist_link_before(IntList list, int value, IntNode succ) {
+    IntNode pred = succ ? succ->prev : list->tail;
+
+    IntNode new_node = intlist_create_node(value, pred, succ);
+    if (!new_node) return false;
+
+    if (!pred)  list->head = new_node;
+    else        pred->next = new_node;
+
+    if (!succ)  list->tail = new_node;
+    else        succ->prev = new_node;
+
+    list->size++;
+    return true;
+}
+
+static void intlist_unlink_node(IntList list, IntNode node) {
+    IntNode pred = node->prev;
+    IntNode succ = node->next;
+
+    if (!pred)  list->head = succ;
+    else        pred->next = succ;
+
+    if (!succ)  list->tail = pred;
+    else        succ->prev = pred;
+
+    free(node);
+    list->size--;
 }
 
 IntList intlist_new(void) {
@@ -57,9 +100,7 @@ void intlist_clear(IntList list) {
     IntNode curr = list->head;
     while (curr) {
         IntNode next = curr->next;
-
         free(curr);
-        
         curr = next;
     }
 
@@ -68,71 +109,27 @@ void intlist_clear(IntList list) {
 }
 
 bool intlist_push_front(IntList list, int value) {
-    if (intlist_not_exists(list)) return false;
-
-    IntNode new_node = intlist_create_node(value);
-    if (!new_node) return false;
-    
-    if (intlist_is_empty(list)) {
-        list->head = list->tail = new_node;
-    } else {
-        list->head->prev = new_node;
-        new_node->next = list->head;
-        list->head = new_node;
-    }
-
-    list->size++;
-    return true;
+    return !intlist_not_exists(list) && intlist_link_before(list, value, list->head);
 }
 
 bool intlist_push(IntList list, int value) {
-    if (intlist_not_exists(list)) return false;
-    
-    IntNode new_node = intlist_create_node(value);
-    if (!new_node) return false;
-    
-    if (intlist_is_empty(list)) {
-        list->head = list->tail = new_node;
-    } else {
-        new_node->prev = list->tail;
-        list->tail->next = new_node;
-        list->tail = new_node;
-    }
-    
-    list->size++;
-    return true;
+    return !intlist_not_exists(list) && intlist_link_before(list, value, NULL);
 }
 
 bool intlist_push_at(IntList list, int value, size_t index) {
-    if (intlist_not_exists(list) || index > list->size) return false;
-    
-    if (index == 0) return intlist_push_front(list, value);
-    if (index == list->size) return intlist_push(list, value);
-    
-    IntNode new_node = intlist_create_node(value);
-    if (!new_node) return false;
-    
-    IntNode curr = list->head;
-    for (size_t i = 0; i < index; i++, curr = curr->next);
+    return !intlist_not_exists(list) && index <= list->size && intlist_link_before(list, value, index < list->size ? intlist_node_at(list, index) : NULL);
+}
 
-    new_node->prev = curr->prev;
-    new_node->next = curr;
-    curr->prev->next = new_node;
-    curr->prev = new_node;
-    
-    list->size++;
-    return true;
+bool intlist_front(const IntList list, int* out) {
+    return !intlist_is_empty(list) && out && (*out = list->head->value);
 }
 
 bool intlist_get_at(const IntList list, size_t index, int* out) {
-    if (intlist_is_empty(list) || !out || index >= list->size) return false;
-    
-    IntNode curr = list->head;
-    for (size_t i = 0; i < index; i++, curr = curr->next);
-    
-    *out = curr->value;
-    
-    return true;
+    return !intlist_is_empty(list) && out && index < list->size && (*out = intlist_node_at(list, index)->value);
+}
+
+bool intlist_back(const IntList list, int* out) {
+    return !intlist_is_empty(list) && out && (*out = list->tail->value);
 }
 
 int intlist_index(const IntList list, int target) {
@@ -142,7 +139,6 @@ int intlist_index(const IntList list, int target) {
     for (size_t i = 0; curr; i++, curr = curr->next) {
         if (curr->value == target) return i;
     }
-    
     return -1;
 }
 
@@ -156,65 +152,22 @@ size_t intlist_count(const IntList list, int target) {
         if (curr->value == target) freq++;
         curr = curr->next;
     }
-    
     return freq;
 }
 
 void intlist_pop_front(IntList list) {
     if (intlist_is_empty(list)) return;
-
-    IntNode old_head = list->head;
-    if (list->size == 1) {
-        list->head = list->tail = NULL;
-    } else {
-        list->head = list->head->next;
-        list->head->prev = NULL;
-    }
-
-    free(old_head);
-    list->size--;
+    intlist_unlink_node(list, list->head);
 }
 
 void intlist_pop(IntList list) {
     if (intlist_is_empty(list)) return;
-    
-    if (list->size == 1) {
-        free(list->head);
-        list->head = list->tail = NULL;
-    } else {
-        IntNode old_tail = list->tail;
-
-        list->tail = list->tail->prev;
-        list->tail->next = NULL;
-
-        free(old_tail);
-    }
-    
-    list->size--;
+    intlist_unlink_node(list, list->tail);
 }
 
 void intlist_pop_at(IntList list, size_t index) {
     if (intlist_is_empty(list) || index >= list->size) return;
-
-    if (index == 0) {
-        intlist_pop_front(list);
-        return;
-    }
-    
-    if (index == list->size - 1) {
-        intlist_pop(list);
-        return;
-    }
-    
-    IntNode curr = list->head;
-    for (size_t i = 0; i < index; i++, curr = curr->next);
-    
-    curr->prev->next = curr->next;
-    curr->next->prev = curr->prev;
-
-    free(curr);
-    
-    list->size--;
+    intlist_unlink_node(list, intlist_node_at(list, index));    
 }
 
 size_t intlist_size(IntList list) {
@@ -222,7 +175,7 @@ size_t intlist_size(IntList list) {
 }
 
 void intlist_reverse(IntList list) {
-    if (intlist_is_empty(list)) return;
+    if (intlist_not_exists(list) || list->size < 2) return;
     
     IntNode curr = list->head;
     while (curr) {
@@ -474,9 +427,7 @@ bool intlist_contains(const IntList list, int target) {
 }
 
 bool intlist_equals(const IntList list1, const IntList list2) {
-    if (intlist_not_exists(list1) || intlist_not_exists(list2)) return false;
-
-    if (list1->size != list2->size) return false;
+    if (intlist_not_exists(list1) || intlist_not_exists(list2) || list1->size != list2->size) return false;
 
     IntNode curr1 = list1->head;
     IntNode curr2 = list2->head;
