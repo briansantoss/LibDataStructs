@@ -180,7 +180,7 @@ TEST(next) {
     
     ASSERT_TRUE(intmap_is_empty(map));
     ASSERT_FALSE(intmap_iter_new(map))
-
+    
     ASSERT_TRUE(intmap_insert(map, "A", 65));
     ASSERT_TRUE(intmap_insert(map, "B", 980));
     ASSERT_TRUE(intmap_insert(map, "C", 90));
@@ -208,6 +208,26 @@ TEST(next) {
     ASSERT_FALSE(intmap_iter_new(NULL));
 }
 
+TEST(reset) {
+    IntMap map = intmap_new();
+    ASSERT_TRUE(map);
+    
+    ASSERT_TRUE(intmap_insert(map, "A", 8909));
+    ASSERT_TRUE(intmap_insert(map, "B", 90922));
+    ASSERT_TRUE(intmap_insert(map, "C", 0));
+    
+    IntMapIter iter = intmap_iter_new(map);
+    ASSERT_TRUE(iter);
+
+    KeyValuePair pair;
+    // Checks if the iterator could be used normally after reset
+    for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) ASSERT_TRUE(intmap_iter_next(iter, &pair));
+        ASSERT_FALSE(intmap_iter_next(iter, &pair));
+        intmap_iter_reset(iter);
+    }
+}
+
 int main() {
     TestCase tests[] = {
         {"new", test_new},
@@ -219,6 +239,7 @@ int main() {
         {"keys and values", test_keys_and_values},
         {"resize", test_resize},
         {"next", test_next},
+        {"reset", test_reset},
     };
 
     TestSuite suite = {.name = "IntMap", .tests = tests, .tests_num = sizeof (tests) / sizeof (tests[0])};
