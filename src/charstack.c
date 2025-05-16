@@ -30,6 +30,11 @@ static CharNode charstack_create_node(int value) {
     return new_node;
 }
 
+static void charstack_free(CharStack stack) {
+    charstack_clear(stack);
+    free(stack);
+}
+
 CharStack charstack_new(void) {
     CharStack new_stack = (CharStack) malloc(sizeof (struct charstack));
     if (charstack_not_exists(new_stack)) return NULL;
@@ -56,11 +61,6 @@ void charstack_clear(CharStack stack) {
 
     stack->top = NULL;
     stack->size = 0;
-}
-
-void charstack_free(CharStack stack) {
-    charstack_clear(stack);
-    free(stack);
 }
 
 bool charstack_push(CharStack stack, char value) {

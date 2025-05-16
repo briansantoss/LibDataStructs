@@ -33,6 +33,11 @@ static IntNode intlist_create_node(int value) {
     return new_node;
 }
 
+static void intlist_free(IntList list) {
+    intlist_clear(list);
+    free(list);
+}
+
 IntList intlist_new(void) {
     IntList new_list = (IntList) malloc(sizeof (struct intlist));
     if (intlist_not_exists(new_list)) return NULL;
@@ -60,11 +65,6 @@ void intlist_clear(IntList list) {
 
     list->head = list->tail = NULL;
     list->size = 0;
-}
-
-void intlist_free(IntList list) {
-    intlist_clear(list);
-    free(list);
 }
 
 bool intlist_push_front(IntList list, int value) {

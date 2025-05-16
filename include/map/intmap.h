@@ -15,7 +15,6 @@ typedef struct intmap* IntMap;
 
 IntMap intmap_new(void);
 void intmap_clear(IntMap map);
-void intmap_free(IntMap map);
 
 bool intmap_insert(IntMap map, const char* key, int value);
 bool intmap_get(const IntMap map, const char* key, int* out);
@@ -30,6 +29,6 @@ bool intmap_equals(const IntMap map1, const IntMap map2);
 uint32_t intmap_size(const IntMap map);
 
 IntMapIter intmap_iter_new(const IntMap map);
-bool intmap_iter_next(const IntMapIter iter, KeyValuePair* out);
+bool intmap_iter_next(IntMapIter iter, KeyValuePair* out);
 
 #endif // INTMAP_H

@@ -115,6 +115,24 @@ static bool intmap_resize(IntMap map) {
     return true;
 }
 
+static void intmap_free(IntMap map) {
+    if (intmap_not_exists(map)) return;
+
+    for (uint32_t i = 0; i < map->capacity; i++) {
+        IntMapNode curr = map->table[i];
+        while (curr) {
+            IntMapNode next = curr->next;
+
+            intmap_free_node(curr);
+
+            curr = next;
+        }
+    }
+    free(map->table);
+    map->size = map->capacity = 0;
+    free(map);
+}
+
 IntMap intmap_new(void) {
     IntMap new_map = (IntMap) malloc(sizeof (struct intmap));
     if (intmap_not_exists(new_map)) return NULL;
@@ -150,24 +168,6 @@ void intmap_clear(IntMap map) {
         map->table[i] = NULL;
     }
     map->size = 0;
-}
-
-void intmap_free(IntMap map) {
-    if (intmap_not_exists(map)) return;
-
-    for (uint32_t i = 0; i < map->capacity; i++) {
-        IntMapNode curr = map->table[i];
-        while (curr) {
-            IntMapNode next = curr->next;
-
-            intmap_free_node(curr);
-
-            curr = next;
-        }
-    }
-    free(map->table);
-    map->size = map->capacity = 0;
-    free(map);
 }
 
 bool intmap_insert(IntMap map, const char* key, int value) {

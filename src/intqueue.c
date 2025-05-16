@@ -32,6 +32,11 @@ static IntNode intqueue_create_node(int value) {
     return new_node;
 }
 
+static void intqueue_free(IntQueue queue) {
+    intqueue_clear(queue);
+    free(queue);
+}
+
 IntQueue intqueue_new(void) {
     IntQueue new_queue = (IntQueue) malloc(sizeof (struct intqueue));
     if (intqueue_not_exists(new_queue)) return NULL;
@@ -59,11 +64,6 @@ void intqueue_clear(IntQueue queue) {
 
     queue->front = queue->rear = NULL;
     queue->size = 0;
-}
-
-void intqueue_free(IntQueue queue) {
-    intqueue_clear(queue);
-    free(queue);
 }
 
 bool intqueue_enqueue(IntQueue queue, int value) {

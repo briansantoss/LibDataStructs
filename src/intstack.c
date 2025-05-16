@@ -32,6 +32,11 @@ static IntNode intstack_create_node(int value) {
     return new_node;
 }
 
+static void intstack_free(IntStack stack) {
+    intstack_clear(stack);
+    free(stack);
+}
+
 IntStack intstack_new(void) {
     IntStack new_stack = (IntStack) malloc(sizeof (struct intstack));
     if (intstack_not_exists(new_stack)) return NULL;
@@ -57,11 +62,6 @@ void intstack_clear(IntStack stack) {
 
     stack->top = NULL;
     stack->size = 0;
-}
-
-void intstack_free(IntStack stack) {
-    intstack_clear(stack);
-    free(stack);
 }
 
 bool intstack_push(IntStack stack, int value) {

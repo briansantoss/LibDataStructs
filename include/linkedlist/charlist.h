@@ -12,7 +12,6 @@ typedef struct charlist* CharList;
 CharList charlist_new(void);
 CharList charlist_from_string(char* str, size_t size);
 void charlist_clear(CharList list);
-void charlist_free(CharList list);
 
 bool charlist_push_front(CharList list, char value);
 bool charlist_push_at(CharList list, char value, size_t index);

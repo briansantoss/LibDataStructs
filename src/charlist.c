@@ -33,6 +33,11 @@ static CharNode charlist_create_node(char value) {
     return new_node;
 }
 
+static void charlist_free(CharList list) {
+    charlist_clear(list);
+    free(list);
+}
+
 CharList charlist_new(void) {
     CharList new_list = (CharList) malloc(sizeof (struct charlist));
     if (charlist_not_exists(new_list)) return NULL;
@@ -60,11 +65,6 @@ void charlist_clear(CharList list) {
 
     list->head = list->tail = NULL;
     list->size = 0;
-}
-
-void charlist_free(CharList list) {
-    charlist_clear(list);
-    free(list);
 }
 
 bool charlist_push_front(CharList list, char value) {

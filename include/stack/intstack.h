@@ -12,7 +12,6 @@ typedef struct intstack* IntStack;
 IntStack intstack_new(void);
 bool intstack_is_empty(const IntStack stack);
 void intstack_clear(IntStack stack);
-void intstack_free(IntStack stack);
 
 bool intstack_push(IntStack stack, int value);
 bool intstack_pop(IntStack stack, int* out);

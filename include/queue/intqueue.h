@@ -13,7 +13,6 @@ typedef struct intqueue* IntQueue;
 IntQueue intqueue_new(void);
 bool intqueue_is_empty(const IntQueue queue);
 void intqueue_clear(IntQueue queue);
-void intqueue_free(IntQueue queue);
 
 bool intqueue_enqueue(IntQueue queue, int value);
 bool intqueue_dequeue(IntQueue queue, int* out);

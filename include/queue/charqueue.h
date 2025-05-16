@@ -13,7 +13,6 @@ typedef struct charqueue* CharQueue;
 CharQueue charqueue_new(void);
 bool charqueue_is_empty(const CharQueue queue);
 void charqueue_clear(CharQueue queue);
-void charqueue_free(CharQueue queue);
 
 bool charqueue_enqueue(CharQueue queue, char value);
 bool charqueue_dequeue(CharQueue queue, char* out);

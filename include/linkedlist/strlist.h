@@ -11,7 +11,6 @@ typedef struct strlist* StrList;
 
 StrList strlist_new(void);
 void strlist_clear(StrList list);
-void strlist_free(StrList list);
 
 bool strlist_push_front(StrList list, const char* value, size_t str_size);
 bool strlist_push_at(StrList list, const char* value, size_t str_size, size_t index);

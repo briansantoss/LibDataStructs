@@ -12,7 +12,6 @@ typedef struct charstack* CharStack;
 CharStack charstack_new(void);
 bool charstack_is_empty(const CharStack stack);
 void charstack_clear(CharStack stack);
-void charstack_free(CharStack stack);
 
 bool charstack_push(CharStack stack, char value);
 bool charstack_pop(CharStack stack, char* out);

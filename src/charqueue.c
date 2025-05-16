@@ -32,6 +32,11 @@ static CharNode charqueue_create_node(char value) {
     return new_node;
 }
 
+static void charqueue_free(CharQueue queue) {
+    charqueue_clear(queue);
+    free(queue);
+}
+
 CharQueue charqueue_new(void) {
     CharQueue new_queue = (CharQueue) malloc(sizeof (struct charqueue));
     if (charqueue_not_exists(new_queue)) return NULL;
@@ -59,11 +64,6 @@ void charqueue_clear(CharQueue queue) {
 
     queue->front = queue->rear = NULL;
     queue->size = 0;
-}
-
-void charqueue_free(CharQueue queue) {
-    charqueue_clear(queue);
-    free(queue);
 }
 
 bool charqueue_enqueue(CharQueue queue, char value) {

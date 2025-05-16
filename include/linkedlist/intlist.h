@@ -12,7 +12,6 @@ typedef struct intlist* IntList;
 IntList intlist_new(void);
 IntList intlist_from_array(int* arr, size_t size);
 void intlist_clear(IntList list);
-void intlist_free(IntList list);
 
 bool intlist_push_front(IntList list, int value);
 bool intlist_push_at(IntList list, int value, size_t index);
