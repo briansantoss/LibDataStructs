@@ -18,5 +18,5 @@ run: $(TESTS)
 		./$$test; \
 	done
 
-$(BINDIR)%: %.c
+$(BINDIR)%: %.c $(HEADER)
 	@$(CC) $(CFLAGS) $< -L$(LIBDIR) -l$(BASENAME) -o $@
