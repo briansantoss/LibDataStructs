@@ -24,11 +24,11 @@ bool intqueue_is_empty(const IntQueue queue) {
     return intqueue_not_exists(queue) || !queue->front;
 }
 
-static IntNode intqueue_create_node(int value) {
+static IntNode intqueue_create_node(int value, IntNode next) {
     IntNode new_node = (IntNode) malloc(sizeof (struct intnode));
     if (!new_node) return NULL;
 
-    *new_node = (struct intnode) {.value = value, .next = NULL};
+    *new_node = (struct intnode) {.value = value, .next = next};
     return new_node;
 }
 
@@ -56,9 +56,7 @@ void intqueue_clear(IntQueue queue) {
     IntNode curr = queue->front;
     while (curr) {
         IntNode next = curr->next;
-
         free(curr);
-        
         curr = next;
     }
 
@@ -69,44 +67,40 @@ void intqueue_clear(IntQueue queue) {
 bool intqueue_enqueue(IntQueue queue, int value) {
     if (intqueue_not_exists(queue)) return false;
 
-    IntNode new_node = intqueue_create_node(value);
+    IntNode new_node = intqueue_create_node(value, NULL);
     if (!new_node) return false;
 
-    if (intqueue_is_empty(queue)) {
-        queue->front = queue->rear = new_node;
+    IntNode rear = queue->rear;
+    queue->rear = new_node;
+    if (!rear) {
+        queue->front = new_node;
     } else {
-        queue->rear->next = new_node;
-        queue->rear = new_node;
+        rear->next = new_node;
     }
 
     queue->size++;
-
     return true;
 }
 
 bool intqueue_dequeue(IntQueue queue, int* out) {
     if (intqueue_is_empty(queue)) return false;
 
-    IntNode old_front = queue->front;
+    IntNode front = queue->front;
+    if (out) *out = front->value;
 
-    if (out) *out = old_front->value;
-
+    queue->front = front->next;
     if (queue->size == 1) {
-        queue->front = queue->rear = NULL;
-    } else {
-        queue->front = old_front->next;
+        queue->rear = NULL;
     }
-    
-    free(old_front);
+
+    free(front);
 
     queue->size--;
-
     return true;
 }
 
 bool intqueue_peek(const IntQueue queue, int* out) {
     if (intqueue_is_empty(queue) || !out) return false;
-
     *out = queue->front->value;
     return true;
 }

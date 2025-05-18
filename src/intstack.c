@@ -5,7 +5,6 @@
 #include "queue/intqueue.h"
 #include "internal/memmngr.h"
 
-
 typedef struct intnode {
     int value;
     struct intnode* next;
@@ -74,28 +73,24 @@ bool intstack_push(IntStack stack, int value) {
     stack->top = new_node;
 
     stack->size++;
-    
     return true;
 }
 
 bool intstack_pop(IntStack stack, int* out) {
     if (intstack_is_empty(stack)) return false;
 
-    IntNode old_top = stack->top;
-    
-    if (out) *out = old_top->value;
+    IntNode top = stack->top;
+    if (out) *out = top->value;
 
-    stack->top = old_top->next;
-    free(old_top);
+    stack->top = top->next;
+    free(top);
 
     stack->size--;
-
     return true;
 }
 
 bool intstack_peek(const IntStack stack, int* out) {
     if (intstack_is_empty(stack) || !out) return false;
-
     *out = stack->top->value;
     return true;
 }

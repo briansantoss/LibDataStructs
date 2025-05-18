@@ -54,7 +54,6 @@ void charstack_clear(CharStack stack) {
     CharNode curr = stack->top;
     while (curr) {
         CharNode next = curr->next;
-
         free(curr);
         curr = next;
     }
@@ -79,21 +78,18 @@ bool charstack_push(CharStack stack, char value) {
 bool charstack_pop(CharStack stack, char* out) {
     if (charstack_is_empty(stack)) return false;
 
-    CharNode old_top = stack->top;
-    
-    if (out) *out = old_top->value;
+    CharNode top = stack->top;
+    if (out) *out = top->value;
 
-    stack->top = old_top->next;
-    free(old_top);
+    stack->top = top->next;
+    free(top);
 
     stack->size--;
-
     return true;
 }
 
 bool charstack_peek(const CharStack stack, char* out) {
     if (charstack_is_empty(stack) || !out) return false;
-
     *out = stack->top->value;
     return true;
 }

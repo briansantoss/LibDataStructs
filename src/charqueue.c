@@ -56,12 +56,10 @@ void charqueue_clear(CharQueue queue) {
     CharNode curr = queue->front;
     while (curr) {
         CharNode next = curr->next;
-
         free(curr);
-        
         curr = next;
     }
-
+    
     queue->front = queue->rear = NULL;
     queue->size = 0;
 }
@@ -87,26 +85,22 @@ bool charqueue_enqueue(CharQueue queue, char value) {
 bool charqueue_dequeue(CharQueue queue, char* out) {
     if (charqueue_is_empty(queue)) return false;
 
-    CharNode old_front = queue->front;
+    CharNode front = queue->front;
+    if (out) *out = front->value;
 
-    if (out) *out = old_front->value;
-
+    queue->front = front->next;
     if (queue->size == 1) {
-        queue->front = queue->rear = NULL;
-    } else {
-        queue->front = old_front->next;
+        queue->rear = NULL;
     }
     
-    free(old_front);
+    free(front);
 
     queue->size--;
-
     return true;
 }
 
 bool charqueue_peek(CharQueue queue, char* out) {
     if (charqueue_is_empty(queue) || !out) return false;
-
     *out = queue->front->value;
     return true;
 }
