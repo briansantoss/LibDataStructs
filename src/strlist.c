@@ -25,6 +25,16 @@ bool strlist_is_empty(const StrList list) {
     return strlist_not_exists(list) || !list->head;
 }
 
+static void strlist_free_node(StrNode node) {
+    free(node->value);
+    free(node);
+}
+
+static void strlist_free(StrList list) {
+    strlist_clear(list);
+    free(list);
+}
+
 static StrNode strlist_create_node(const char* value, size_t
 size) {
     StrNode new_node = (StrNode) malloc(sizeof (struct strnode));
@@ -40,11 +50,6 @@ size) {
 
     *new_node = (struct strnode) {.value = value_copy, .prev = NULL, .next = NULL};
     return new_node;
-}
-
-static void strlist_free_node(StrNode node) {
-    free(node->value);
-    free(node);
 }
 
 StrList strlist_new(void) {
@@ -74,11 +79,6 @@ void strlist_clear(StrList list) {
 
     list->head = list->tail = NULL;
     list->size = 0;
-}
-
-void strlist_free(StrList list) {
-    strlist_clear(list);
-    free(list);
 }
 
 bool strlist_push_front(StrList list, const char* value, size_t str_size) {

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stddef.h>
 
+#define YELLOW  "\033[1;33m"
 #define GREEN   "\033[1;32m"
 #define RED     "\033[1;31m"
 #define RESET   "\033[0m"
@@ -22,16 +23,37 @@ static size_t failed_tests = 0;
             fprintf(stderr, RED "\nAssertion failed (%s:%d): %s\n" RESET, __FILE__, __LINE__ , #cond); \
             return; \
         } \
-    } while (0);
+    } while (0)
     
-    #define ASSERT_FALSE(cond)  \
+#define ASSERT_FALSE(cond)  \
     do { \
         if ((cond)) { \
             last_test_status = 0; \
             fprintf(stderr, RED "\nAssertion failed (%s:%d): %s\n" RESET, __FILE__, __LINE__ , #cond); \
             return; \
         } \
-    } while (0);
+    } while (0)
+    
+#define ASSERT_EQUAL(expected, actual) \
+    do { \
+        if ((expected) != actual) { \
+            last_test_status = 0; \
+            fprintf(stderr, RED "\nAssertion failed (%s:%d), expect %lld, got %lld\n" RESET, __FILE__, __LINE__ , (long long) (expected), (long long) (actual)); \
+            return; \
+        } \
+    } while (0)
+
+#define ASSERT_NOT_EQUAL(expected, actual) \
+    do { \
+        if ((expected) == (actual)) { \
+            last_test_status = 0; \
+            fprintf(stderr, RED "\nAssertion failed (%s:%d), dit not expect %lld, but got %lld\n" RESET, __FILE__, __LINE__, (long long) (expected), (long long) (actual)); \
+            return; \
+        } \
+    } while (0)
+
+#define ASSERT_NULL(ptr)        ASSERT_FALSE((ptr))
+#define ASSERT_NOT_NULL(ptr)    ASSERT_TRUE((ptr))
 
 typedef void (*test_func)(void);
 
@@ -68,7 +90,7 @@ void run_suite_tests(TestSuite* suite) {
         run_test(&suite->tests[i]);
     }
     CHAR_N_TIMES('=', 80);
-    printf("\nSummary: Ran %zu tests, " GREEN "%zu" RESET " passed, " RED "%zu" RESET " failed.", tests_num,  tests_num - failed_tests, failed_tests);
+    printf("\nSummary: Ran " YELLOW "%zu" RESET " tests, " GREEN "%zu" RESET " passed, " RED "%zu" RESET " failed.", tests_num,  tests_num - failed_tests, failed_tests);
     CHAR_N_TIMES('=', 80);
     printf("\n");
 }

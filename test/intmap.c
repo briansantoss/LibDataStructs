@@ -179,7 +179,7 @@ TEST(next) {
     ASSERT_TRUE(map);
     
     ASSERT_TRUE(intmap_is_empty(map));
-    ASSERT_FALSE(intmap_iter_new(map))
+    ASSERT_FALSE(intmap_iter_new(map));
     
     ASSERT_TRUE(intmap_insert(map, "A", 65));
     ASSERT_TRUE(intmap_insert(map, "B", 980));
