@@ -121,15 +121,21 @@ bool intlist_push_at(IntList list, int value, size_t index) {
 }
 
 bool intlist_front(const IntList list, int* out) {
-    return !intlist_is_empty(list) && out && (*out = list->head->value);
+    if (intlist_is_empty(list) || !out) return false;
+    *out = list->head->value;
+    return true;
 }
 
 bool intlist_get_at(const IntList list, size_t index, int* out) {
-    return !intlist_is_empty(list) && out && index < list->size && (*out = intlist_node_at(list, index)->value);
+    if (intlist_is_empty(list) || !out || index >= list->size) return false;
+    *out = intlist_node_at(list, index)->value;
+    return true;
 }
 
 bool intlist_back(const IntList list, int* out) {
-    return !intlist_is_empty(list) && out && (*out = list->tail->value);
+    if (intlist_is_empty(list) || !out) return false;
+    *out = list->tail->value;
+    return true;
 }
 
 int intlist_index(const IntList list, int target) {
@@ -276,7 +282,7 @@ void intlist_foreach(IntList list, int (*callback_func)(int value)) {
 }
 
 IntList intlist_copy(const IntList list) {
-    if (intlist_is_empty(list)) return NULL;
+    if (intlist_not_exists(list)) return NULL;
     
     IntList copy = intlist_new();
     if (intlist_not_exists(copy)) return NULL;
@@ -295,7 +301,8 @@ IntList intlist_copy(const IntList list) {
 }
 
 IntList intlist_map(const IntList list, int (*callback_func)(int value)) {
-    if (intlist_is_empty(list) || !callback_func) return NULL;
+    if (intlist_not_exists(list)) return NULL;
+    if (!callback_func) return intlist_copy(list);
 
     IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
@@ -314,7 +321,8 @@ IntList intlist_map(const IntList list, int (*callback_func)(int value)) {
 }
 
 IntList intlist_filter(const IntList list, bool (*predicate_func)(int value)) {
-    if (intlist_is_empty(list) || !predicate_func) return NULL;
+    if (intlist_not_exists(list)) return NULL;
+    if (!predicate_func) return intlist_copy(list);
 
     IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
@@ -335,7 +343,7 @@ IntList intlist_filter(const IntList list, bool (*predicate_func)(int value)) {
 }
 
 IntList intlist_zip(const IntList list1, const IntList list2) {
-    if (intlist_is_empty(list1) || intlist_is_empty(list2)) return NULL;
+    if (intlist_not_exists(list1) || intlist_not_exists(list2)) return NULL;
 
     IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
@@ -356,7 +364,8 @@ IntList intlist_zip(const IntList list1, const IntList list2) {
 }
 
 bool intlist_all(const IntList list, bool (*predicate_func)(int value)) {
-    if (intlist_is_empty(list) || !predicate_func) return true;
+    if (intlist_not_exists(list)) return false;
+    if (!predicate_func) return true;
 
     IntNode curr = list->head;
     while (curr) {
