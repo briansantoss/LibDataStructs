@@ -588,6 +588,26 @@ TEST(zip) {
     ASSERT_NULL(intlist_zip(NULL, list2));
 }
 
+TEST(to_array) {
+    IntList list = intlist_new();
+    ASSERT_NOT_NULL(list);
+
+    ASSERT_NULL(intlist_to_array(list));
+
+    for (int i = 0; i < 100; i++) ASSERT_TRUE(intlist_push(list, i + 1));
+    
+    int* array = intlist_to_array(list);
+    ASSERT_NOT_NULL(array);
+    
+    int value;
+    for (int i = 0; i < intlist_size(list); i++) {
+        ASSERT_TRUE(intlist_get_at(list, i, &value));
+        ASSERT_EQUAL(value, array[i]);
+    }
+    
+    ASSERT_NULL(intlist_to_array(NULL));
+}
+
 TEST(all) {
     IntList list = intlist_new();
     ASSERT_NOT_NULL(list);
@@ -672,6 +692,7 @@ int main() {
         {"map", test_map},
         {"filter", test_filter},
         {"zip", test_zip},
+        {"to_array", test_to_array},
         {"all", test_all},
         {"any", test_any},
         {"sum", test_sum},
