@@ -95,20 +95,18 @@ IntList intlist_new(void) {
 }
 
 void intlist_clear(IntList list) {
-    if (intlist_is_empty(list)) return;
+    if (intlist_not_exists(list)) return;
 
-    IntNode curr = list->head;
-    while (curr) {
-        IntNode next = curr->next;
+    for (IntNode curr = list->head, next; curr; curr = next) {
+        next = curr->next;
         free(curr);
-        curr = next;
     }
 
     list->head = list->tail = NULL;
     list->size = 0;
 }
 
-bool intlist_push_front(IntList list, int value) {
+bool intlist_push_front(IntList list, int value) { 
     return !intlist_not_exists(list) && intlist_link_before(list, value, list->head);
 }
 
@@ -139,7 +137,7 @@ bool intlist_back(const IntList list, int* out) {
 }
 
 int intlist_index(const IntList list, int target) {
-    if (intlist_is_empty(list)) return -1;
+    if (intlist_not_exists(list)) return -1;
 
     IntNode curr = list->head;
     for (size_t i = 0; curr; i++, curr = curr->next) {
@@ -149,14 +147,11 @@ int intlist_index(const IntList list, int target) {
 }
 
 size_t intlist_count(const IntList list, int target) {
-    if (intlist_is_empty(list)) return 0;
+    if (intlist_not_exists(list)) return 0;
     
     size_t freq = 0;
-    
-    IntNode curr = list->head;
-    while (curr) {
+    for (IntNode curr = list->head; curr; curr = curr->next) {
         if (curr->value == target) freq++;
-        curr = curr->next;
     }
     return freq;
 }
@@ -183,14 +178,10 @@ size_t intlist_size(IntList list) {
 void intlist_reverse(IntList list) {
     if (intlist_not_exists(list) || list->size < 2) return;
     
-    IntNode curr = list->head;
-    while (curr) {
-        IntNode next = curr->next;
-        
+    for (IntNode curr = list->head, next; curr; curr = next) {
+        next = curr->next;
         curr->next = curr->prev;
         curr->prev = next;
-        
-        curr = next;
     }
     
     IntNode head = list->head;
@@ -212,46 +203,37 @@ int* intlist_to_array(const IntList list) {
     }
     
     IntNode curr = list->head;
-    for (size_t i = 0; i < arr_size; i++, curr = curr->next) {
-        arr[i] = curr->value;
-    }
-    
+    for (size_t i = 0; i < arr_size; i++, curr = curr->next) arr[i] = curr->value;
     return arr;
 }
 
 IntStack intlist_to_stack(const IntList list) {
-    if (intlist_is_empty(list)) return NULL;
+    if (intlist_not_exists(list)) return NULL;
     
     IntStack new_stack = intstack_new();
     if (!new_stack) return NULL;
     
-    IntNode curr = list->head;
-    while (curr) {
+    for (IntNode curr = list->head; curr; curr = curr->next) {
         if (!intstack_push(new_stack, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
-        curr = curr->next;
     }    
-    
     return new_stack;
 }
 
 IntQueue intlist_to_queue(const IntList list) {
-    if (intlist_is_empty(list)) return NULL;
+    if (intlist_not_exists(list)) return NULL;
     
     IntQueue new_queue = intqueue_new();
     if (!new_queue) return NULL;
     
-    IntNode curr = list->head;
-    while (curr) {
+    for (IntNode curr = list->head; curr; curr = curr->next) {
         if (!intqueue_enqueue(new_queue, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
-        curr = curr->next;
     }    
-
     return new_queue;
 }
 
@@ -267,18 +249,13 @@ IntList intlist_from_array(int* arr, size_t size) {
             return NULL;
         }
     }
-    
     return new_list;
 }
 
 void intlist_foreach(IntList list, int (*callback_func)(int value)) {
-    if (intlist_is_empty(list) || !callback_func) return;
+    if (intlist_not_exists(list) || !callback_func) return;
     
-    IntNode curr = list->head;
-    while (curr) {
-        curr->value = callback_func(curr->value);
-        curr = curr->next;
-    }
+    for (IntNode curr = list->head; curr; curr = curr->next) curr->value = callback_func(curr->value);
 }
 
 IntList intlist_copy(const IntList list) {
@@ -287,16 +264,12 @@ IntList intlist_copy(const IntList list) {
     IntList copy = intlist_new();
     if (intlist_not_exists(copy)) return NULL;
     
-    IntNode curr = list->head;
-    while (curr) {
+    for (IntNode curr = list->head; curr; curr = curr->next) {
         if (!intlist_push(copy, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
-        
-        curr = curr->next;
-    }
-    
+    }   
     return copy;
 }
 
@@ -307,16 +280,12 @@ IntList intlist_map(const IntList list, int (*callback_func)(int value)) {
     IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
     
-    IntNode curr = list->head;
-    while (curr) {
+    for (IntNode curr = list->head; curr; curr = curr->next) {
         if (!intlist_push(new_list, callback_func(curr->value))) {
             memmngr_rollback();
             return NULL;
         }
-        
-        curr = curr->next;
     }
-    
     return new_list;
 }
 
@@ -327,18 +296,14 @@ IntList intlist_filter(const IntList list, bool (*predicate_func)(int value)) {
     IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
     
-    IntNode curr = list->head;
-    while (curr) {
+    for (IntNode curr = list->head; curr; curr = curr->next) {
         if (predicate_func(curr->value)) {
             if (!intlist_push(new_list, curr->value)) {
                 memmngr_rollback();
                 return NULL;
             }
         }
-        
-        curr = curr->next;
     }
-    
     return new_list;
 }
 
@@ -348,18 +313,12 @@ IntList intlist_zip(const IntList list1, const IntList list2) {
     IntList new_list = intlist_new();
     if (intlist_not_exists(new_list)) return NULL;
     
-    IntNode curr1 = list1->head;
-    IntNode curr2 = list2->head;
-    while (curr1 && curr2) {
+    for (IntNode curr1 = list1->head, curr2 = list2->head; curr1 && curr2; curr1 = curr1->next, curr2 = curr2->next) {
         if (!intlist_push(new_list, curr1->value) || !intlist_push(new_list, curr2->value)) {
             memmngr_rollback();
             return NULL;
         }
-        
-        curr1 = curr1->next;
-        curr2 = curr2->next;
     }
-    
     return new_list;
 }
 
@@ -367,37 +326,22 @@ bool intlist_all(const IntList list, bool (*predicate_func)(int value)) {
     if (intlist_not_exists(list)) return false;
     if (!predicate_func) return true;
 
-    IntNode curr = list->head;
-    while (curr) {
-        if(!predicate_func(curr->value)) return false;
-        curr = curr->next;
-    }
-    
+    for (IntNode curr = list->head; curr; curr = curr->next) if (!predicate_func(curr->value)) return false;
     return true;
 }
 
 bool intlist_any(const IntList list, bool (*predicate_func)(int value)) {
-    if (intlist_is_empty(list) || !predicate_func) return false;
+    if (intlist_not_exists(list) || !predicate_func) return false;
 
-    IntNode curr = list->head;
-    while (curr) {
-        if(predicate_func(curr->value)) return true;
-        curr = curr->next;
-    }
-
+    for (IntNode curr = list->head; curr; curr = curr->next) if (predicate_func(curr->value)) return true;
     return false;
 }
 
 long long intlist_reduce(const IntList list, long long (*reduce_func)(long long acc, int value), long long initial) {
-    if (intlist_is_empty(list) || !reduce_func) return initial;
+    if (intlist_not_exists(list) || !reduce_func) return initial;
 
-    IntNode curr = list->head;
     long long acc = initial;
-    while (curr) {
-        acc = reduce_func(acc, curr->value);
-        curr = curr->next;
-    }
-
+    for (IntNode curr = list->head; curr; acc = reduce_func(acc, curr->value), curr = curr->next);
     return acc;
 }
 
@@ -415,37 +359,22 @@ void intlist_print(const IntList list) {
         return;
     }
 
-    IntNode curr = list->head;
-    while (curr) {
+    for (IntNode curr = list->head; curr; curr = curr->next) {
         printf("%d", curr->value);
-        
         if (curr->next) printf(" -> ");
-        curr = curr->next;
     }
 }
 
 bool intlist_contains(const IntList list, int target) {
-    if (intlist_is_empty(list)) return false;
-
-    IntNode curr = list->head;
-    while (curr) {
-        if (curr->value == target) return true;
-        curr = curr->next;
-    }
+    if (intlist_not_exists(list)) return false;
+    
+    for (IntNode curr = list->head; curr; curr = curr->next) if (curr->value == target) return true;
     return false;
 }
 
 bool intlist_equals(const IntList list1, const IntList list2) {
     if (intlist_not_exists(list1) || intlist_not_exists(list2) || list1->size != list2->size) return false;
 
-    IntNode curr1 = list1->head;
-    IntNode curr2 = list2->head;
-    while (curr1 && curr2) {
-        if (curr1->value != curr2->value) return false;
-       
-        curr1 = curr1->next;
-        curr2 = curr2->next;
-    }
-
+    for (IntNode curr1 = list1->head, curr2 = list2->head; curr1 && curr2; curr1 = curr1->next, curr2 = curr2->next) if (curr1->value != curr2->value) return false;
     return true;
 }

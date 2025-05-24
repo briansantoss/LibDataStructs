@@ -50,13 +50,11 @@ IntStack intstack_new(void) {
 }
 
 void intstack_clear(IntStack stack) {
-    if (intstack_is_empty(stack)) return;
+    if (intstack_not_exists(stack)) return;
 
-    IntNode curr = stack->top;
-    while (curr) {
-        IntNode next = curr->next;
+    for (IntNode curr, next = stack->top; curr; curr = next) {
+        next = curr->next;
         free(curr);
-        curr = next;
     }
 
     stack->top = NULL;
@@ -100,37 +98,31 @@ size_t intstack_size(const IntStack stack) {
 }
 
 IntList intstack_to_list(const IntStack stack) {
-    if (intstack_is_empty(stack)) return NULL;
+    if (intstack_not_exists(stack)) return NULL;
 
     IntList new_list = intlist_new();
     if (!new_list) return NULL;
 
-    IntNode curr = stack->top;
-    while (curr) {
+    for (IntNode curr = stack->top; curr; curr = curr->next) {
         if (!intlist_push(new_list, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
-        curr = curr->next;
     }
-
     return new_list;
 }
 
 IntQueue intstack_to_queue(const IntStack stack) {
-    if (intstack_is_empty(stack)) return NULL;
+    if (intstack_not_exists(stack)) return NULL;
     
     IntQueue new_queue = intqueue_new();
     if (!new_queue) return NULL;
     
-    IntNode curr = stack->top;
-    while (curr) {
+    for (IntNode curr = stack->top; curr; curr = curr->next) {
         if (!intqueue_enqueue(new_queue, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
-        curr = curr->next;
     }    
-
     return new_queue;
 }

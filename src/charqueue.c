@@ -4,7 +4,6 @@
 #include "stack/charstack.h"
 #include "internal/memmngr.h"
 
-
 typedef struct charnode {
     char value;
     struct charnode* next;
@@ -24,11 +23,11 @@ bool charqueue_is_empty(const CharQueue queue) {
     return charqueue_not_exists(queue) || !queue->front;
 }
 
-static CharNode charqueue_create_node(char value) {
+static CharNode charqueue_create_node(char value, CharNode next) {
     CharNode new_node = (CharNode) malloc(sizeof (struct charnode));
     if (!new_node) return NULL;
 
-    *new_node = (struct charnode) {.value = value, .next = NULL};
+    *new_node = (struct charnode) {.value = value, .next = next};
     return new_node;
 }
 
@@ -53,11 +52,9 @@ CharQueue charqueue_new(void) {
 void charqueue_clear(CharQueue queue) {
     if (charqueue_is_empty(queue)) return;
 
-    CharNode curr = queue->front;
-    while (curr) {
-        CharNode next = curr->next;
+    for (CharNode curr = queue->front, next; curr; curr = next) {
+        next = curr->next;
         free(curr);
-        curr = next;
     }
     
     queue->front = queue->rear = NULL;
@@ -67,18 +64,15 @@ void charqueue_clear(CharQueue queue) {
 bool charqueue_enqueue(CharQueue queue, char value) {
     if (charqueue_not_exists(queue)) return false;
 
-    CharNode new_node = charqueue_create_node(value);
+    CharNode new_node = charqueue_create_node(value, NULL);
     if (!new_node) return false;
 
-    if (charqueue_is_empty(queue)) {
-        queue->front = queue->rear = new_node;
-    } else {
-        queue->rear->next = new_node;
-        queue->rear = new_node;
-    }
+    CharNode rear = queue->rear;
+    queue->rear = new_node;
+    if (!rear)  queue->front = new_node;
+    else        rear->next = new_node;
 
     queue->size++;
-
     return true;
 }
 
@@ -89,9 +83,7 @@ bool charqueue_dequeue(CharQueue queue, char* out) {
     if (out) *out = front->value;
 
     queue->front = front->next;
-    if (queue->size == 1) {
-        queue->rear = NULL;
-    }
+    if (!queue->front) queue->rear = NULL;
     
     free(front);
 
@@ -110,37 +102,31 @@ size_t charqueue_size(const CharQueue queue) {
 }
 
 CharList charqueue_to_list(const CharQueue queue) {
-    if (charqueue_is_empty(queue)) return NULL;
+    if (charqueue_not_exists(queue)) return NULL;
 
     CharList new_list = charlist_new();
     if (!new_list) return NULL;
 
-    CharNode curr = queue->front;
-    while (curr) {
+    for (CharNode curr = queue->front; curr; curr = curr->next) {
         if (!charlist_push(new_list, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
-        curr = curr->next;
     }
-
     return new_list;
 }
 
 CharStack charqueue_to_stack(const CharQueue queue) {
-    if (charqueue_is_empty(queue)) return NULL;
+    if (charqueue_not_exists(queue)) return NULL;
 
     CharStack new_stack = charstack_new();
     if (!new_stack) return NULL;
 
-    CharNode curr = queue->front;
-    while (curr) {
+    for (CharNode curr = queue->front; curr; curr = curr->next) {
         if (!charstack_push(new_stack, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
-        curr = curr->next;
     }
-
     return new_stack;
 }

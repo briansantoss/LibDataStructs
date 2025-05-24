@@ -51,11 +51,9 @@ CharStack charstack_new(void) {
 void charstack_clear(CharStack stack) {
     if (charstack_is_empty(stack)) return;
 
-    CharNode curr = stack->top;
-    while (curr) {
-        CharNode next = curr->next;
+    for (CharNode curr = stack->top, next; curr; curr = next) {
+        next = curr->next;
         free(curr);
-        curr = next;
     }
 
     stack->top = NULL;
@@ -99,38 +97,31 @@ size_t charstack_size(const CharStack stack) {
 }
 
 CharList charstack_to_list(const CharStack stack) {
-    if (charstack_is_empty(stack)) return NULL;
+    if (charstack_not_exists(stack)) return NULL;
 
     CharList new_list = charlist_new();
     if (!new_list) return NULL;
 
-    CharNode curr = stack->top;
-    while (curr) {
+    for (CharNode curr = stack->top; curr; curr = curr->next) {
         if (!charlist_push(new_list, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
-
-        curr = curr->next;
     }
-
     return new_list;
 }
 
 CharQueue charstack_to_queue(const CharStack stack) {
-    if (charstack_is_empty(stack)) return NULL;
+    if (charstack_not_exists(stack)) return NULL;
     
     CharQueue new_queue = charqueue_new();
     if (!new_queue) return NULL;
     
-    CharNode curr = stack->top;
-    while (curr) {
+    for (CharNode curr = stack->top; curr; curr = curr->next) {
         if (!charqueue_enqueue(new_queue, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
-        curr = curr->next;
     }    
-
     return new_queue;
 }

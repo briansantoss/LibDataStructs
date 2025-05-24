@@ -53,11 +53,9 @@ IntQueue intqueue_new(void) {
 void intqueue_clear(IntQueue queue) {
     if (intqueue_is_empty(queue)) return;
 
-    IntNode curr = queue->front;
-    while (curr) {
-        IntNode next = curr->next;
+    for (IntNode curr = queue->front, next; curr; curr = next) {
+        next = curr->next;
         free(curr);
-        curr = next;
     }
 
     queue->front = queue->rear = NULL;
@@ -72,11 +70,8 @@ bool intqueue_enqueue(IntQueue queue, int value) {
 
     IntNode rear = queue->rear;
     queue->rear = new_node;
-    if (!rear) {
-        queue->front = new_node;
-    } else {
-        rear->next = new_node;
-    }
+    if (!rear)  queue->front = new_node;
+    else        rear->next = new_node;
 
     queue->size++;
     return true;
@@ -89,9 +84,7 @@ bool intqueue_dequeue(IntQueue queue, int* out) {
     if (out) *out = front->value;
 
     queue->front = front->next;
-    if (queue->size == 1) {
-        queue->rear = NULL;
-    }
+    if (!queue->front) queue->rear = NULL;
 
     free(front);
 
@@ -110,37 +103,31 @@ size_t intqueue_size(IntQueue queue) {
 }
 
 IntList intqueue_to_list(const IntQueue queue) {
-    if (intqueue_is_empty(queue)) return NULL;
+    if (intqueue_not_exists(queue)) return NULL;
 
     IntList new_list = intlist_new();
     if (!new_list) return NULL;
 
-    IntNode curr = queue->front;
-    while (curr) {
+    for (IntNode curr = queue->front; curr; curr = curr->next) {
         if (!intlist_push(new_list, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
-        curr = curr->next;
     }
-
     return new_list;
 }
 
 IntStack intqueue_to_stack(const IntQueue queue) {
-    if (intqueue_is_empty(queue)) return NULL;
+    if (intqueue_not_exists(queue)) return NULL;
 
     IntStack new_stack = intstack_new();
     if (!new_stack) return NULL;
 
-    IntNode curr = queue->front;
-    while (curr) {
+    for (IntNode curr = queue->front; curr; curr = curr->next) {
         if (!intstack_push(new_stack, curr->value)) {
             memmngr_rollback();
             return NULL;
         }
-        curr = curr->next;
     }
-
     return new_stack;
 }
