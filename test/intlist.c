@@ -633,13 +633,58 @@ TEST(all) {
     ASSERT_FALSE(intlist_all(NULL, NULL));
 }
 
+TEST(reverse) {
+    IntList list = intlist_new();
+    ASSERT_NOT_NULL(list);
+    ASSERT_TRUE(intlist_is_empty(list));
+    
+    // Trying to reverse an empty list should fail silently
+    intlist_reverse(list);
+    ASSERT_TRUE(intlist_is_empty(list));
+    
+    ASSERT_TRUE(intlist_push(list, 10));
+    ASSERT_EQUAL(intlist_size(list), 1);
+    
+    // Same to a list with size less than 2
+    intlist_reverse(list);
+    ASSERT_EQUAL(intlist_size(list), 1);
+    
+    ASSERT_TRUE(intlist_push(list, 1019));
+    ASSERT_EQUAL(intlist_size(list), 2);
+    
+    intlist_reverse(list);
+    ASSERT_EQUAL(intlist_size(list), 2);
+
+    int head_value;
+    ASSERT_TRUE(intlist_front(list, &head_value));
+    ASSERT_EQUAL(head_value, 1019);
+
+    intlist_pop_front(list);
+
+    ASSERT_TRUE(intlist_front(list, &head_value));
+    ASSERT_EQUAL(head_value, 10);
+
+    int arr[100];
+    for (int i = 0; i < 100; i++) arr[i] = i + 1;
+    
+    IntList l = intlist_from_array(arr, 100);
+    ASSERT_NOT_NULL(l);
+    
+    intlist_reverse(l);
+    for (int i = 99; i >= 0; i--) {
+        ASSERT_TRUE(intlist_front(l, &head_value));
+        ASSERT_EQUAL(arr[i], head_value);
+        intlist_pop_front(l);
+    }
+}
+
 TEST(any) {
     IntList list = intlist_new();
     ASSERT_NOT_NULL(list);
     
     bool greater_than_120(int num) { return num > 120; };
     
-    // An empty list did not staisfy any predicate
+    // An empty list did not satisfy any predicate
     ASSERT_FALSE(intlist_any(list, greater_than_120));
     ASSERT_FALSE(intlist_any(list, NULL));
     
@@ -693,6 +738,7 @@ int main() {
         {"filter", test_filter},
         {"zip", test_zip},
         {"to_array", test_to_array},
+        {"reverse", test_reverse},
         {"all", test_all},
         {"any", test_any},
         {"sum", test_sum},
