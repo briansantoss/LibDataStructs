@@ -23,7 +23,9 @@ void charlist_pop(CharList list);
 
 bool charlist_is_empty(const CharList list);
 size_t charlist_size(const CharList list);
+bool charlist_front(const CharList list, char* out);
 bool charlist_get_at(const CharList list, size_t index, char* out);
+bool charlist_back(const CharList list, char* out);
 int charlist_index(const CharList list, char target);
 size_t charlist_count(const CharList list, char target);
 bool charlist_contains(const CharList list, char target);

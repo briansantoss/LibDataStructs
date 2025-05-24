@@ -25,17 +25,60 @@ bool charlist_is_empty(const CharList list) {
     return charlist_not_exists(list) || !list->head;
 }
 
-static CharNode charlist_create_node(char value) {
+static CharNode charlist_create_node(char value, CharNode prev, CharNode next) {
     CharNode new_node = (CharNode) malloc(sizeof (struct charnode));
     if (!new_node) return NULL;
 
-    *new_node = (struct charnode) {.value = value, .prev = NULL, .next = NULL};
+    *new_node = (struct charnode) {.value = value, .prev = prev, .next = next};
     return new_node;
 }
 
 static void charlist_free(CharList list) {
     charlist_clear(list);
     free(list);
+}
+
+static CharNode charlist_node_at(const CharList list, size_t index) {
+    CharNode node;
+    if (index < list->size / 2) {
+        node = list->head;
+        while (index--) node = node->next;
+    } else {
+        node = list->tail;
+        index = list->size - index - 1;
+        while (index--) node = node->prev;
+    }
+    return node;
+}
+
+static bool charlist_link_before(CharList list, char value, CharNode succ) {
+    CharNode pred = succ ? succ->prev : list->tail;
+
+    CharNode new_node = charlist_create_node(value, pred, succ);
+    if (!new_node) return false;
+
+    if (!pred)  list->head = new_node;
+    else        pred->next = new_node;
+
+    if (!succ)  list->tail = new_node;
+    else        succ->prev = new_node;
+
+    list->size++;
+    return true;
+}
+
+static void charlist_unlink_node(CharList list, CharNode node) {
+    CharNode pred = node->prev;
+    CharNode succ = node->next;
+
+    if (!pred)  list->head = succ;
+    else        pred->next = succ;
+
+    if (!succ)  list->tail = pred;
+    else        succ->prev = pred;
+
+    free(node);
+    list->size--;
 }
 
 CharList charlist_new(void) {
