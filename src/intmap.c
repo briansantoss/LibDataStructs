@@ -85,7 +85,7 @@ static IntMapNode intmap_get_node_by_key(const IntMap map, const char* key) {
 
 static void intmap_transfer(const IntMap map, IntMapNode* new_table, uint32_t new_capacity) {
     for (uint32_t i = 0; i < map->capacity; i++) {
-        for (IntMapNode curr, next = map->table[i]; curr; curr = next) {
+        for (IntMapNode curr = map->table[i], next; curr; curr = next) {
             next = curr->next;
 
             uint32_t index = intmap_get_index(curr->hash, new_capacity);
