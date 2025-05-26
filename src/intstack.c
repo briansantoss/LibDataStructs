@@ -52,7 +52,7 @@ IntStack intstack_new(void) {
 void intstack_clear(IntStack stack) {
     if (intstack_not_exists(stack)) return;
 
-    for (IntNode curr, next = stack->top; curr; curr = next) {
+    for (IntNode curr = stack->top, next; curr; curr = next) {
         next = curr->next;
         free(curr);
     }

@@ -315,7 +315,7 @@ CharList charlist_zip(const CharList list1, const CharList list2) {
     CharList new_list = charlist_new();
     if (charlist_not_exists(new_list)) return NULL;
 
-    for (CharNode curr1 = list1->head, curr2 = list2->head;curr1 && curr2; curr1 = curr1->next, curr2 = curr2->next) {
+    for (CharNode curr1 = list1->head, curr2 = list2->head; curr1 && curr2; curr1 = curr1->next, curr2 = curr2->next) {
         if (!charlist_push(new_list, curr1->value) || !charlist_push(new_list, curr2->value)) {
             memmngr_rollback();
             return NULL;
