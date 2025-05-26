@@ -6,75 +6,81 @@
 
 TEST(new) {
     IntMap map = intmap_new();
-    ASSERT_TRUE(map);
+    ASSERT_NOT_NULL(map);
 
     ASSERT_TRUE(intmap_is_empty(map));
-    ASSERT_TRUE(intmap_size(map) == 0);
+    ASSERT_EQUAL(intmap_size(map), 0);
 }
 
 TEST(insert) {
     IntMap map = intmap_new();
-    ASSERT_TRUE(map);
+    ASSERT_NOT_NULL(map);
 
     int value;
     ASSERT_TRUE(intmap_insert(map, "a", 1) && intmap_has_key(map, "a"));
-    ASSERT_TRUE(intmap_size(map) == 1);
-    ASSERT_TRUE(intmap_get(map, "a", &value) && value == 1);
+    ASSERT_EQUAL(intmap_size(map), 1);
+    ASSERT_TRUE(intmap_get(map, "a", &value));
+    ASSERT_EQUAL(value, 1);
     ASSERT_FALSE(intmap_insert(map, "a", 2));
     
     ASSERT_TRUE(intmap_insert(map, "key", 55) && intmap_has_key(map, "key"));
-    ASSERT_TRUE(intmap_size(map) == 2);
-    ASSERT_TRUE(intmap_get(map, "key", &value) && value == 55);
+    ASSERT_EQUAL(intmap_size(map), 2);
+    ASSERT_TRUE(intmap_get(map, "key", &value));
+    ASSERT_EQUAL(value, 55);
     ASSERT_FALSE(intmap_insert(map, "key", 2));
 
     ASSERT_FALSE(intmap_insert(NULL, "null", 10));
     ASSERT_FALSE(intmap_insert(NULL, NULL, 45));
 
     // Insertion with a NULL key should fail silently and not alter the map
-    ASSERT_FALSE(intmap_insert(map, NULL, 108) && intmap_has_key(map, NULL) );
-    ASSERT_TRUE(intmap_size(map) == 2);
+    ASSERT_FALSE(intmap_insert(map, NULL, 108) && intmap_has_key(map, NULL));
+    ASSERT_EQUAL(intmap_size(map), 2);
 }
 
 TEST(set) {
     IntMap map = intmap_new();
-    ASSERT_TRUE(map);
+    ASSERT_NOT_NULL(map);
     
     int value;
     ASSERT_TRUE(intmap_set(map, "new", 5) && intmap_has_key(map, "new"));
-    ASSERT_TRUE(intmap_size(map) == 1);
-    ASSERT_TRUE(intmap_get(map, "new", &value) && value == 5);
-    
+    ASSERT_EQUAL(intmap_size(map), 1);
+    ASSERT_TRUE(intmap_get(map, "new", &value)) ;
+    ASSERT_EQUAL(value, 5);
+
     ASSERT_TRUE(intmap_set(map, "new", 10)); 
-    ASSERT_TRUE(intmap_get(map, "new", &value) && value == 10);
-    ASSERT_TRUE(intmap_size(map) == 1);
+    ASSERT_TRUE(intmap_get(map, "new", &value));
+    ASSERT_EQUAL(value, 10);
+    ASSERT_EQUAL(intmap_size(map), 1);
     
     ASSERT_FALSE(intmap_set(NULL, "a", 56));
-    ASSERT_FALSE(intmap_set(map, NULL, 190) && intmap_size(map) == 1);
+    ASSERT_FALSE(intmap_set(map, NULL, 190));
+    ASSERT_EQUAL(intmap_size(map), 1);
 }
 
 TEST(remove) {
     IntMap map = intmap_new();
-    ASSERT_TRUE(map);
+    ASSERT_NOT_NULL(map);
 
     ASSERT_TRUE(intmap_insert(map, "1", 123));
     ASSERT_TRUE(intmap_insert(map, "2", 1980));
-    ASSERT_TRUE(intmap_size(map) == 2);
+    ASSERT_EQUAL(intmap_size(map), 2);
 
     intmap_remove(map, "2");
-    ASSERT_TRUE(intmap_size(map) == 1);
+    ASSERT_EQUAL(intmap_size(map), 1);
     ASSERT_FALSE(intmap_has_key(map, "2"));
 
     int value;
     ASSERT_TRUE(intmap_has_key(map, "1"));
-    ASSERT_TRUE(intmap_get(map, "1", &value) && value == 123);
+    ASSERT_TRUE(intmap_get(map, "1", &value));
+    ASSERT_EQUAL(value, 123);
 
     intmap_remove(map, "not exists");
-    ASSERT_TRUE(intmap_size(map) == 1);
+    ASSERT_EQUAL(intmap_size(map), 1);
 }
 
 TEST(clear) {
     IntMap map = intmap_new();
-    ASSERT_TRUE(map);
+    ASSERT_NOT_NULL(map);
     
     ASSERT_TRUE(intmap_insert(map, "a", 1));
     ASSERT_TRUE(intmap_insert(map, "b", 2));
@@ -83,20 +89,22 @@ TEST(clear) {
     ASSERT_TRUE(intmap_has_key(map, "a") && intmap_has_key(map, "b"));
     
     intmap_clear(map);
-    ASSERT_TRUE(intmap_is_empty(map) && intmap_size(map) == 0);
+    ASSERT_TRUE(intmap_is_empty(map));
+    ASSERT_EQUAL(intmap_size(map), 0);
     ASSERT_FALSE(intmap_has_key(map, "a") && intmap_has_key(map, "b"));
     
     ASSERT_TRUE(intmap_insert(map, "a", 234));
-    ASSERT_TRUE(intmap_size(map) == 1);
+    ASSERT_EQUAL(intmap_size(map), 1);
     
     int value;
-    ASSERT_TRUE(intmap_get(map, "a", &value) && value == 234);
+    ASSERT_TRUE(intmap_get(map, "a", &value));
+    ASSERT_EQUAL(value, 234);
 }
 
 TEST(equals) {
     IntMap m1 = intmap_new();
     IntMap m2 = intmap_new();
-    ASSERT_TRUE(m1 && m2);
+    ASSERT_NOT_NULL(m1 && m2);
     
     ASSERT_TRUE(intmap_is_empty(m1) && intmap_is_empty(m2));
     ASSERT_TRUE(intmap_equals(m1, m2));
@@ -126,7 +134,7 @@ TEST(equals) {
 
 TEST(keys_and_values) {
     IntMap map = intmap_new();
-    ASSERT_TRUE(map);
+    ASSERT_NOT_NULL(map);
     
     char** keys = intmap_keys(map);
     int* values = intmap_values(map);
@@ -138,7 +146,7 @@ TEST(keys_and_values) {
     keys = intmap_keys(map);
     values = intmap_values(map);
     ASSERT_TRUE(keys && values);
-    ASSERT_TRUE(intmap_size(map) == 2);
+    ASSERT_EQUAL(intmap_size(map), 2);
     
     // Check if the key-value pairs match
     int found[2] = {0};
@@ -155,7 +163,7 @@ TEST(keys_and_values) {
 
 TEST(resize) {
     IntMap map = intmap_new();
-    ASSERT_TRUE(map);
+    ASSERT_NOT_NULL(map);
 
     for (int i = 0; i < 1000; i++) {
         char key[16];
@@ -168,7 +176,7 @@ TEST(resize) {
         int value;
         sprintf(key, "key%d", i);
         ASSERT_TRUE(intmap_get(map, key, &value));
-        ASSERT_TRUE(value == i);
+        ASSERT_EQUAL(value, i);
     }
 
     ASSERT_TRUE(intmap_size(map) == 1000);
@@ -176,7 +184,7 @@ TEST(resize) {
 
 TEST(next) {
     IntMap map = intmap_new();
-    ASSERT_TRUE(map);
+    ASSERT_NOT_NULL(map);
     
     ASSERT_TRUE(intmap_is_empty(map));
     ASSERT_FALSE(intmap_iter_new(map));
@@ -199,9 +207,9 @@ TEST(next) {
         ASSERT_TRUE(intmap_iter_next(iter, &pair));
         index = strcspn(expected_keys, pair.key);
         ASSERT_TRUE(index != strlen(expected_keys));
-        ASSERT_TRUE(!found[index]);
+        ASSERT_FALSE(found[index]);
         found[index] = true;
-        ASSERT_TRUE(pair.value == expected_values[index]);
+        ASSERT_EQUAL(pair.value, expected_values[index]);
     }
     
     ASSERT_FALSE(intmap_iter_next(iter, &pair));
@@ -210,7 +218,7 @@ TEST(next) {
 
 TEST(reset) {
     IntMap map = intmap_new();
-    ASSERT_TRUE(map);
+    ASSERT_NOT_NULL(map);
     
     ASSERT_TRUE(intmap_insert(map, "A", 8909));
     ASSERT_TRUE(intmap_insert(map, "B", 90922));

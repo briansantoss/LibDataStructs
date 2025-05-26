@@ -489,7 +489,7 @@ TEST(map) {
     IntList list = intlist_new();
     ASSERT_NOT_NULL(list);
     
-    int square(int num) { return num * num; };
+    int square(int num) { return num * num; }
 
     // Trying to map an empty list should return a new one (return new empty list)
     IntList empty_copy = intlist_map(list, square);
