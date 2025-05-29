@@ -289,7 +289,7 @@ static void intmap_iter_free(IntMapIter iter) {
 }
 
 IntMapIter intmap_iter_new(const IntMap map) {
-    if (intmap_is_empty(map)) return NULL;
+    if (intmap_not_exists(map)) return NULL;
 
     IntMapIter new_iter = (IntMapIter) malloc(sizeof (struct intmapiter));
     if (!new_iter) return NULL;
@@ -327,12 +327,10 @@ IntMapIter intmap_iter_new(const IntMap map) {
 }
 
 bool intmap_iter_next(IntMapIter iter, KeyValuePair* out) {
-    if (!iter || !out || iter->index >= iter->size) return false;
+    if (!iter || iter->index >= iter->size) return false;
 
-    *out = iter->items[iter->index++];
+    if (out) *out = iter->items[iter->index++];
     return true;
 }
 
-void intmap_iter_reset(IntMapIter iter) {
-    if (iter) iter->index = 0;
-}
+void intmap_iter_reset(IntMapIter iter) { if (iter) iter->index = 0; }
