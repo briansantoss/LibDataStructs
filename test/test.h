@@ -71,9 +71,9 @@ typedef struct {
 void run_test(TestCase* test) {
     last_test_status = 1;
     printf("[ RUN ] %s\n", test->name);
-    test->test();  // Executa o teste
-
-    if (last_test_status) {
+    test->test(); 
+    
+    if (last_test_status) { 
         printf(GREEN "[ PASS ]" RESET "\n");
     } else {
         failed_tests++;

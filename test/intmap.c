@@ -179,44 +179,71 @@ TEST(resize) {
         ASSERT_EQUAL(value, i);
     }
 
-    ASSERT_TRUE(intmap_size(map) == 1000);
+    ASSERT_EQUAL(intmap_size(map), 1000);
 }
 
-TEST(next) {
+TEST(iter_new) {
+    IntMap map = intmap_new();
+    ASSERT_NOT_NULL(map);
+
+    // An empty map should return an iterator
+    ASSERT_NOT_NULL(intmap_iter_new(map));
+    
+    ASSERT_TRUE(intmap_insert(map, "A", 10));
+    ASSERT_TRUE(intmap_insert(map, "B", 20));
+    ASSERT_TRUE(intmap_insert(map, "C", 30));
+
+    // Verifying for non-empty map
+    IntMapIter iter = intmap_iter_new(map);
+    ASSERT_NOT_NULL(iter);
+
+    ASSERT_NULL(intmap_iter_new(NULL));
+}
+
+TEST(iter_next) {
     IntMap map = intmap_new();
     ASSERT_NOT_NULL(map);
     
-    ASSERT_TRUE(intmap_is_empty(map));
-    ASSERT_FALSE(intmap_iter_new(map));
-    
+    KeyValuePair pair;
+
+    // An empty map should return an already-exhausted iterator
+    IntMapIter iter = intmap_iter_new(map);
+    ASSERT_NOT_NULL(iter);
+
+    ASSERT_FALSE(intmap_iter_next(iter, &pair));
+    ASSERT_FALSE(intmap_iter_next(iter, NULL));
+
     ASSERT_TRUE(intmap_insert(map, "A", 65));
     ASSERT_TRUE(intmap_insert(map, "B", 980));
     ASSERT_TRUE(intmap_insert(map, "C", 90));
     
-    IntMapIter iter = intmap_iter_new(map);
-    ASSERT_TRUE(iter);
+    iter = intmap_iter_new(map);
+    ASSERT_NOT_NULL(iter);
     
     char* expected_keys = "ABC";
     int expected_values[] = {65, 980, 90};
     bool found[3] = {false, false, false};
     
-    KeyValuePair pair;
+    // Checking if the key-value pairs match
     size_t index;
-    
     for (int i = 0; i < 3; i++) {
         ASSERT_TRUE(intmap_iter_next(iter, &pair));
-        index = strcspn(expected_keys, pair.key);
-        ASSERT_TRUE(index != strlen(expected_keys));
-        ASSERT_FALSE(found[index]);
+
+        // Checking if the actual key is in the expected keys array
+        index = strcspn(expected_keys, pair.key); 
+        ASSERT_NOT_EQUAL(index, strlen(expected_keys));
+
+        ASSERT_FALSE(found[index]); 
         found[index] = true;
         ASSERT_EQUAL(pair.value, expected_values[index]);
     }
-    
     ASSERT_FALSE(intmap_iter_next(iter, &pair));
-    ASSERT_FALSE(intmap_iter_new(NULL));
+    ASSERT_FALSE(intmap_iter_next(iter, NULL));
+
+    ASSERT_FALSE(intmap_iter_next(NULL, NULL));
 }
 
-TEST(reset) {
+TEST(iter_reset) {
     IntMap map = intmap_new();
     ASSERT_NOT_NULL(map);
     
@@ -246,8 +273,9 @@ int main() {
         {"equals", test_equals},
         {"keys and values", test_keys_and_values},
         {"resize", test_resize},
-        {"next", test_next},
-        {"reset", test_reset},
+        {"iter new", test_iter_new},
+        {"iter next", test_iter_next},
+        {"iter reset", test_iter_reset},
     };
 
     TestSuite suite = {.name = "IntMap", .tests = tests, .tests_num = sizeof (tests) / sizeof (tests[0])};
