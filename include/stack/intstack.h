@@ -4,10 +4,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-typedef struct intlist* IntList;
-typedef struct intqueue* IntQueue;
+typedef struct _intlist* IntList;
+typedef struct _intqueue* IntQueue;
 
-typedef struct intstack* IntStack;
+typedef struct _intstack* IntStack;
 
 IntStack intstack_new(void);
 bool intstack_is_empty(const IntStack stack);

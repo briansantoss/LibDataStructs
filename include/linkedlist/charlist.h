@@ -4,10 +4,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-typedef struct charstack* CharStack;
-typedef struct charqueue* CharQueue;
+typedef struct _charstack* CharStack;
+typedef struct _charqueue* CharQueue;
 
-typedef struct charlist* CharList;
+typedef struct _charlist* CharList;
 
 CharList charlist_new(void);
 CharList charlist_from_string(char* str, size_t size);

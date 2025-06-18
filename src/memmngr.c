@@ -2,47 +2,47 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct memnode {
+typedef struct _memnode {
     void* dstruct;
     void (*destructor)(void* dstruct);
-    struct memnode* next;
-} *MemNode;
+    struct _memnode* next;
+} *_MemNode;
 
 typedef struct memmngr {
-    MemNode head;
+    _MemNode head;
     size_t size;
 } *MemMngr;
 
-static MemMngr memmngr = NULL;
+static MemMngr _memmngr = NULL;
 
-static MemNode memmngr_create_node(void* dstruct, void (*destructor)(void* dstruct)) {
-    MemNode new_node = (MemNode) malloc(sizeof (struct memnode));
+static _MemNode _memmngr_create_node(void* dstruct, void (*destructor)(void* dstruct)) {
+    _MemNode new_node = (_MemNode) malloc(sizeof (struct _memnode));
     if (!new_node) return NULL;
 
-    *new_node = (struct memnode) {.dstruct = dstruct, .destructor = destructor, .next = NULL};
+    *new_node = (struct _memnode) {.dstruct = dstruct, .destructor = destructor, .next = NULL};
     return new_node;
 }
 
-static void memmngr_destructor() {
-    if (!memmngr) return;
+static void _memmngr_destructor() {
+    if (!_memmngr) return;
 
-    MemNode curr = memmngr->head;
+    _MemNode curr = _memmngr->head;
     while (curr) {
         #ifdef DEBUG
         printf("\nDestroying strucuture %p\n", curr->dstruct);
         #endif
-        MemNode next = curr->next;
+        _MemNode next = curr->next;
 
         curr->destructor(curr->dstruct);
 
         curr = next;
     }
 
-    free(memmngr);
-    memmngr = NULL;
+    free(_memmngr);
+    _memmngr = NULL;
 }
 
-__attribute__((constructor)) void memmngr_new(void) {
+__attribute__((constructor)) void _memmngr_new(void) {
     MemMngr new_memmngr = (MemMngr) malloc(sizeof (struct memmngr));
     if (!new_memmngr) {
         fprintf(stderr, "Error: dstruct internal memory manager cannot be initialized");
@@ -54,9 +54,9 @@ __attribute__((constructor)) void memmngr_new(void) {
     #endif
 
     *new_memmngr = (struct memmngr){.head = NULL, .size = 0};
-    memmngr = new_memmngr;
+    _memmngr = new_memmngr;
 
-    atexit(memmngr_destructor);
+    atexit(_memmngr_destructor);
 } 
 
 #ifdef DEBUG
@@ -68,7 +68,7 @@ void memmngr_print() {
 
     printf("\nStructures registered: ");
     
-    MemNode curr = memmngr->head;;
+    _MemNode curr = memmngr->head;;
     while (curr) {
         printf("%p", curr->dstruct);
         
@@ -79,15 +79,15 @@ void memmngr_print() {
 }
 #endif
 
-bool memmngr_register(void* dstruct, void (*destructor)(void* dstruct)) {
-    if (!memmngr) return false;
+bool _memmngr_register(void* dstruct, void (*destructor)(void* dstruct)) {
+    if (!_memmngr) return false;
 
-    MemNode new_node = memmngr_create_node(dstruct, destructor);
+    _MemNode new_node = _memmngr_create_node(dstruct, destructor);
     if (!new_node) return false;
 
-    new_node->next =  memmngr->head;
-    memmngr->head = new_node;
-    memmngr->size++;
+    new_node->next =  _memmngr->head;
+    _memmngr->head = new_node;
+    _memmngr->size++;
 
     #ifdef DEBUG
     memmngr_print();
@@ -96,9 +96,9 @@ bool memmngr_register(void* dstruct, void (*destructor)(void* dstruct)) {
     return true;
 }
 
-void memmngr_rollback(void) {
-    if (!memmngr|| !memmngr->head) return;
+void _memmngr_rollback(void) {
+    if (!_memmngr|| !_memmngr->head) return;
 
-    memmngr->head->destructor(memmngr->head->dstruct);
-    memmngr->head = memmngr->head->next;
+    _memmngr->head->destructor(_memmngr->head->dstruct);
+    _memmngr->head = _memmngr->head->next;
 }

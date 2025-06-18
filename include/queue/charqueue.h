@@ -5,10 +5,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-typedef struct charlist* CharList;
-typedef struct charstack* CharStack;
+typedef struct _charlist* CharList;
+typedef struct _charstack* CharStack;
 
-typedef struct charqueue* CharQueue;
+typedef struct _charqueue* CharQueue;
 
 CharQueue charqueue_new(void);
 bool charqueue_is_empty(const CharQueue queue);

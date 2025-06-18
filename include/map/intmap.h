@@ -10,8 +10,8 @@ typedef struct keyvaluepair {
     int value;
 } KeyValuePair;
 
-typedef struct intmapiter* IntMapIter;
-typedef struct intmap* IntMap;
+typedef struct _intmapiter* IntMapIter;
+typedef struct _intmap* IntMap;
 
 IntMap intmap_new(void);
 void intmap_clear(IntMap map);

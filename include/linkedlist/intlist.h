@@ -4,10 +4,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-typedef struct intstack* IntStack;
-typedef struct intqueue* IntQueue;
+typedef struct _intstack* IntStack;
+typedef struct _intqueue* IntQueue;
 
-typedef struct intlist* IntList;
+typedef struct _intlist* IntList;
 
 IntList intlist_new(void);
 IntList intlist_from_array(int* arr, size_t size);

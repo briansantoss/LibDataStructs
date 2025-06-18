@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-bool memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
-void memmngr_rollback(void);
+bool _memmngr_register(void* dstruct, void (*destroy_func)(void* dstruct));
+void _memmngr_rollback(void);
 
 #endif // MEM_MNGR_H
